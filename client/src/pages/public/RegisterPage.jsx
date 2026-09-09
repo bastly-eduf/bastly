@@ -7,6 +7,7 @@ import { z } from 'zod';
 import AuthShell from '../../components/auth/AuthShell';
 import FormField from '../../components/auth/FormField';
 import Seo from '../../components/seo/Seo';
+import { useAuth } from '../../context/AuthContext';
 import { api, apiErrorMessage, apiFieldErrors } from '../../services/api';
 
 const passwordRule = z
@@ -40,6 +41,7 @@ const schema = z
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [serverError, setServerError] = useState('');
 
   const {
@@ -67,8 +69,20 @@ export default function RegisterPage() {
     setServerError('');
 
     try {
-      await api.post('/auth/register/student', values);
-      navigate('/student');
+      const { data } = await api.post('/auth/register/student', values);
+
+      if (data.emailVerificationRequired) {
+        navigate('/check-email', {
+          replace: true,
+          state: {
+            message: 'Check your student email and open the Bastly verification link.',
+          },
+        });
+        return;
+      }
+
+      setUser(data.user);
+      navigate('/student', { replace: true });
     } catch (error) {
       const fields = apiFieldErrors(error);
 
@@ -133,8 +147,9 @@ export default function RegisterPage() {
             </div>
 
             <p className="mb-0 rounded-2xl bg-bastly-blue-pale px-4 py-3 text-xs leading-6 text-muted">
-              Bastly will use this information to create a secure parent relationship.
-              The actual invitation email is added in the dedicated email step.
+              The parent invitation uses a secure one-time link. If that email already
+              has a Bastly parent account, this student will be linked to it instead of
+              creating a duplicate account.
             </p>
           </fieldset>
 

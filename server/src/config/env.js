@@ -20,4 +20,13 @@ export const env = Object.freeze({
     'development-only-secret-change-before-production-please',
   requireEmailVerification:
     String(process.env.REQUIRE_EMAIL_VERIFICATION).toLowerCase() === 'true',
+
+  gmailUser: process.env.GMAIL_USER || '',
+  gmailAppPassword: process.env.GMAIL_APP_PASSWORD || '',
+  emailFromName: process.env.EMAIL_FROM_NAME || 'Bastly Academy',
+
+  adminName: process.env.ADMIN_NAME || '',
+  adminEmail: process.env.ADMIN_EMAIL || '',
+  adminPassword: process.env.ADMIN_PASSWORD || '',
+  adminPhone: process.env.ADMIN_PHONE || '',
 });

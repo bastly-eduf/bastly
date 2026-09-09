@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import AuthShell from '../../components/auth/AuthShell';
 import FormField from '../../components/auth/FormField';
 import Seo from '../../components/seo/Seo';
+import { roleHome, useAuth } from '../../context/AuthContext';
 import { api, apiErrorMessage, apiFieldErrors } from '../../services/api';
 
 const schema = z.object({
@@ -16,6 +17,8 @@ const schema = z.object({
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser } = useAuth();
   const [serverError, setServerError] = useState('');
 
   const {
@@ -36,16 +39,12 @@ export default function LoginPage() {
 
     try {
       const { data } = await api.post('/auth/login', values);
-      const role = data.user?.role;
+      setUser(data.user);
 
-      const destination = {
-        student: '/student',
-        parent: '/parent',
-        doctor: '/doctor',
-        admin: '/admin',
-      }[role] || '/';
+      const intendedPath = location.state?.from;
+      const defaultPath = roleHome[data.user?.role] || '/';
 
-      navigate(destination);
+      navigate(intendedPath || defaultPath, { replace: true });
     } catch (error) {
       const fields = apiFieldErrors(error);
 
@@ -95,7 +94,12 @@ export default function LoginPage() {
           />
 
           <div className="flex justify-end">
-            <span className="text-xs font-bold text-muted">Password reset comes in the email step.</span>
+            <Link
+              to="/forgot-password"
+              className="text-xs font-extrabold text-bastly-blue-dark"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           {serverError && (

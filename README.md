@@ -130,3 +130,52 @@ The intended deployment should keep the frontend and API on the same Bastly site
 - protected client routing / global auth context
 - Admin user management
 - core academic models (Course, Group, Enrollment, Lesson, Assessment, Attendance, Performance, Rewards)
+
+
+## Step 4B — Complete authentication + secure invitations
+
+Added:
+
+- global auth context with `/auth/me` session restoration
+- protected Student / Parent / Doctor / Admin frontend routes
+- role guards and wrong-role redirects
+- real logout flow
+- one-time hashed doctor invitation links (48h)
+- one-time hashed parent invitation links (72h)
+- existing-parent-account sibling linking
+- parent invitations generated from student registration
+- optional student email verification flow
+- forgot/reset password flow with session invalidation
+- Gmail/Nodemailer email service with Google App Password support
+- development email fallback that prints secure links to the server console
+- admin-only doctor invitation endpoint
+- temporary admin seed command
+
+### Development admin
+
+Put temporary admin values in `server/.env`, then run:
+
+```bash
+npm run seed:admin --prefix server
+```
+
+After the real owner accounts are ready, development credentials can be discarded.
+
+### Email behavior
+
+If `GMAIL_USER` and `GMAIL_APP_PASSWORD` are blank in development, Bastly does not fake delivery.
+Instead, secure invitation/reset URLs are printed to the server console so the flows can be tested locally.
+
+For production:
+
+- configure Gmail + Google App Password
+- set `REQUIRE_EMAIL_VERIFICATION=true`
+- never commit Gmail or admin credentials
+
+### Next
+
+Build the academic data foundation:
+
+Course → Group → Enrollment → Modules/Lessons → Assessments → Attendance → Weekly Performance → Bastly Cards.
+
+- browser state-changing API requests are checked against the configured frontend Origin as an additional CSRF defense

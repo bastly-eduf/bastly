@@ -14,6 +14,10 @@ import { HttpError } from '../utils/httpError.js';
 import { sanitizeUser } from '../utils/sanitizeUser.js';
 import { createStudentCode } from '../utils/studentCode.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import {
+  createParentInvitation,
+  createStudentVerification,
+} from '../services/invitation.service.js';
 
 const BCRYPT_ROUNDS = 12;
 
@@ -55,7 +59,7 @@ export async function registerStudent(req, res) {
       studentCode: createStudentCode(),
     });
 
-    await ParentRelationship.create({
+    const relationship = await ParentRelationship.create({
       student: user._id,
       invitedName: parentName,
       invitedEmail: parentEmail,
@@ -71,12 +75,35 @@ export async function registerStudent(req, res) {
       ip: req.ip,
     });
 
+    let emailNotice = 'none';
+
+    if (env.requireEmailVerification) {
+      try {
+        await createStudentVerification(user);
+        emailNotice = 'student_verification';
+      } catch (error) {
+        console.error('Student verification email failed:', error.message);
+      }
+    } else {
+      try {
+        await createParentInvitation(relationship);
+        emailNotice = 'parent_invitation';
+      } catch (error) {
+        console.error('Parent invitation email failed:', error.message);
+      }
+    }
+
     const hydratedUser = await User.findById(user._id).select('+tokenVersion');
-    const token = signAuthToken(hydratedUser);
-    res.cookie(AUTH_COOKIE, token, authCookieOptions());
+
+    if (!env.requireEmailVerification) {
+      const token = signAuthToken(hydratedUser);
+      res.cookie(AUTH_COOKIE, token, authCookieOptions());
+    }
 
     return res.status(201).json({
-      message: 'Student account created.',
+      message: env.requireEmailVerification
+        ? 'Student account created. Verify your email to continue.'
+        : 'Student account created.',
       user: sanitizeUser(hydratedUser),
       student: {
         school: profile.school,
@@ -85,6 +112,7 @@ export async function registerStudent(req, res) {
       },
       parentInvitationPending: true,
       emailVerificationRequired: env.requireEmailVerification,
+      emailNotice,
     });
   } catch (error) {
     await Promise.allSettled([
