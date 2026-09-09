@@ -81,7 +81,7 @@ Added:
 - student dashboard marketing preview
 - courses / quiz / homework / reward preview cards
 - weekly performance UI
-- 60% quiz + 40% attendance rating presentation
+- 50% quiz + 30% attendance + 20% homework rating presentation
 - Star / A / B / C grade bands
 - parent / doctor / student tracking explanation
 
@@ -337,6 +337,53 @@ Step 5D: Attendance + weekly performance.
 - doctor creates/opens attendance sessions for a group
 - doctor marks Present / Absent
 - weekly rating uses Quiz results only; Homework stays practice-only
-- current rating direction: 60% quiz performance + 40% attendance
+- current rating direction: 50% quiz + 30% attendance + 20% homework
 - Doctor / Student / Parent tracking views
 - all-Star quiz eligibility feeds the Bastly Spin system
+
+
+## Step 5D — Attendance + weekly performance + Parent dashboard
+
+Weekly performance is now locked to:
+
+- Quizzes: 50%
+- Attendance: 30%
+- Homework: 20%
+
+Important behavior:
+
+- if a category was not assigned for that week, its weight is removed and the remaining weights are normalized to 100%
+- if an assessment was assigned but the student did not submit it, that assessment contributes 0 to its category score
+- Homework uses the FIRST submitted attempt for weekly performance, while the student can still keep retrying for practice
+- only finalized Present/Absent attendance contributes to performance
+- Quiz Star threshold remains 90%+
+- Bastly Spin eligibility stays separate from the overall rating: every required Quiz assigned that week must have a first/only attempt of 90%+, and at least one Quiz must exist
+
+Attendance data model:
+
+```text
+AttendanceSession
+  └── AttendanceRecord per student
+```
+
+Performance snapshot:
+
+```text
+WeeklyPerformance
+  student + course + week
+  quiz / attendance / homework categories
+  normalized weights used
+  overall percentage + Star/A/B/C
+  Bastly Spin eligibility + reason
+```
+
+New views:
+
+- Doctor Attendance
+- Doctor Weekly Performance
+- Student Weekly Performance
+- Parent Dashboard with all linked children's current/history week cards
+
+Assessment creation now stores a `performanceWeekStart`, so a quiz/homework belongs to one explicit performance week instead of relying on submission time.
+
+Next: Step 5E — Bastly Cards reward inventory + spin credit/claim flow, plus Admin performance visibility.

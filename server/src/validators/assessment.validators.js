@@ -35,6 +35,7 @@ export const createAssessmentSchema = z.object({
   instructions: z.string().trim().max(3000).optional().default(''),
   questions: z.array(questionSchema).min(1).max(100),
   status: z.enum(['draft', 'published']).optional().default('draft'),
+  performanceWeekStart: z.coerce.date().optional(),
 });
 
 export const updateAssessmentSchema = createAssessmentSchema.partial().extend({

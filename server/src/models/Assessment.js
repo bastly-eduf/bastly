@@ -38,6 +38,7 @@ const assessmentSchema = new mongoose.Schema(
     questions: { type: [questionSchema], default: [] },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
     publishedAt: { type: Date, default: null },
+    performanceWeekStart: { type: Date, default: null, index: true },
   },
   { timestamps: true },
 );

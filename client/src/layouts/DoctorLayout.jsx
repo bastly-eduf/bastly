@@ -15,6 +15,8 @@ const navigation = [
   { label: 'Overview', to: '/doctor', icon: LayoutDashboard, end: true },
   { label: 'My Courses', to: '/doctor/courses', icon: BookOpen },
   { label: 'Students', to: '/doctor/students', icon: UsersRound },
+  { label: 'Attendance', to: '/doctor/attendance', icon: CalendarCheck },
+  { label: 'Performance', to: '/doctor/performance', icon: BarChart3 },
 ];
 
 export default function DoctorLayout() {

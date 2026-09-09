@@ -4,6 +4,7 @@ import { normalizeQuestions } from '../services/assessment.service.js';
 import { getOwnedCourse } from '../services/doctorAccess.service.js';
 import { writeAuditLog } from '../services/audit.service.js';
 import { HttpError } from '../utils/httpError.js';
+import { startOfWeekUtc } from '../utils/week.js';
 
 async function ownedAssessment(userId, assessmentId) {
   const assessment = await Assessment.findById(assessmentId);
@@ -68,6 +69,7 @@ export async function createAssessment(req, res) {
     questions: normalizeQuestions(data.questions),
     status: data.status,
     publishedAt: data.status === 'published' ? new Date() : null,
+    performanceWeekStart: startOfWeekUtc(data.performanceWeekStart || new Date()),
   });
 
   await writeAuditLog({
@@ -88,6 +90,8 @@ export async function updateAssessment(req, res) {
 
   if (data.questions) data.questions = normalizeQuestions(data.questions);
   if (data.status === 'published' && assessment.status !== 'published') assessment.publishedAt = new Date();
+  if (data.performanceWeekStart) data.performanceWeekStart = startOfWeekUtc(data.performanceWeekStart);
+  if (!assessment.performanceWeekStart) assessment.performanceWeekStart = startOfWeekUtc(new Date());
   if (data.status === 'draft') assessment.publishedAt = null;
 
   Object.assign(assessment, data);

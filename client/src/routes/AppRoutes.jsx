@@ -4,18 +4,21 @@ import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicOnlyRoute from '../components/auth/PublicOnlyRoute';
 import AdminLayout from '../layouts/AdminLayout';
 import DoctorLayout from '../layouts/DoctorLayout';
+import ParentLayout from '../layouts/ParentLayout';
 import PublicLayout from '../layouts/PublicLayout';
 import StudentLayout from '../layouts/StudentLayout';
 import AdminCoursesPage from '../pages/admin/AdminCoursesPage';
 import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
 import AdminEnrollmentsPage from '../pages/admin/AdminEnrollmentsPage';
 import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
-import RoleHomePage from '../pages/app/RoleHomePage';
 import DoctorAssessmentsPage from '../pages/doctor/DoctorAssessmentsPage';
 import DoctorCourseWorkspacePage from '../pages/doctor/DoctorCourseWorkspacePage';
 import DoctorCoursesPage from '../pages/doctor/DoctorCoursesPage';
 import DoctorOverviewPage from '../pages/doctor/DoctorOverviewPage';
 import DoctorStudentsPage from '../pages/doctor/DoctorStudentsPage';
+import DoctorAttendancePage from '../pages/doctor/DoctorAttendancePage';
+import DoctorPerformancePage from '../pages/doctor/DoctorPerformancePage';
+import ParentOverviewPage from '../pages/parent/ParentOverviewPage';
 import CheckEmailPage from '../pages/public/CheckEmailPage';
 import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
 import HomePage from '../pages/public/HomePage';
@@ -29,6 +32,7 @@ import VerifyEmailPage from '../pages/public/VerifyEmailPage';
 import StudentAssessmentPage from '../pages/student/StudentAssessmentPage';
 import StudentAssessmentsPage from '../pages/student/StudentAssessmentsPage';
 import StudentOverviewPage from '../pages/student/StudentOverviewPage';
+import StudentPerformancePage from '../pages/student/StudentPerformancePage';
 
 export default function AppRoutes() {
   return (
@@ -61,11 +65,14 @@ export default function AppRoutes() {
           <Route index element={<StudentOverviewPage />} />
           <Route path="assessments" element={<StudentAssessmentsPage />} />
           <Route path="assessments/:assessmentId" element={<StudentAssessmentPage />} />
+          <Route path="performance" element={<StudentPerformancePage />} />
         </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['parent']} />}>
-        <Route path="/parent/*" element={<RoleHomePage role="Parent" />} />
+        <Route path="/parent" element={<ParentLayout />}>
+          <Route index element={<ParentOverviewPage />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['doctor']} />}>
@@ -75,6 +82,8 @@ export default function AppRoutes() {
           <Route path="courses/:courseId" element={<DoctorCourseWorkspacePage />} />
           <Route path="courses/:courseId/assessments" element={<DoctorAssessmentsPage />} />
           <Route path="students" element={<DoctorStudentsPage />} />
+          <Route path="attendance" element={<DoctorAttendancePage />} />
+          <Route path="performance" element={<DoctorPerformancePage />} />
         </Route>
       </Route>
 
