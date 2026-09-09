@@ -23,6 +23,7 @@
   /* Layout */
   --container-width: 1200px;
   --page-gutter: clamp(1rem, 3vw, 2rem);
+  --header-height: 88px;
 
   /* Radius */
   --radius-sm: 0.75rem;
@@ -37,4 +38,10 @@
   /* Motion */
   --transition-fast: 160ms ease;
   --transition-base: 240ms ease;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 74px;
+  }
 }

@@ -1,3 +1,4 @@
+import Hero from '../../components/common/Hero';
 import Seo from '../../components/seo/Seo';
 
 export default function HomePage() {
@@ -9,21 +10,10 @@ export default function HomePage() {
         canonicalPath="/"
       />
 
-      <main className="foundation-preview">
-        <div className="container foundation-preview__inner">
-          <img
-            className="foundation-preview__logo"
-            src="/brand/bastly-logo.webp"
-            alt="Bastly Academy"
-          />
+      <main>
+        <Hero />
 
-          <p className="eyebrow">Foundation ready</p>
-          <h1>Study smarter. Aim higher.</h1>
-          <p className="foundation-preview__copy">
-            The Bastly foundation is in place. The next step is the real responsive navbar
-            and hero using the supplied desktop and mobile backgrounds.
-          </p>
-        </div>
+        <div id="homepage-content" className="homepage-content-anchor" aria-hidden="true" />
       </main>
     </>
   );

@@ -146,3 +146,18 @@ h4 {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+section[id],
+div[id] {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.homepage-content-anchor {
+  height: 1px;
+  background: var(--color-white);
+}
+
+.placeholder-page {
+  padding-top: calc(5rem + var(--header-height));
+}

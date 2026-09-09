@@ -50,14 +50,15 @@ API: `http://localhost:5000`
 
 ## Current milestone
 
-**Step 1 — Foundation**
+**Step 2 — Navbar + Hero**
 
-- project structure
-- Bastly brand tokens
-- public route skeleton
-- SEO helpers
-- Express security baseline
-- environment/config baseline
-- production health endpoint
+Completed:
 
-Authentication, academic models, dashboards, and the homepage hero are intentionally handled in later controlled steps.
+- Step 1 project/security/SEO foundation
+- responsive transparent-to-solid public navbar
+- accessible mobile navigation
+- responsive hero using separate desktop/mobile WebP backgrounds
+- homepage hero CTA structure
+- reduced-motion support and responsive hero typography
+
+Next: build the remaining homepage sections in the locked Bastly section order.
