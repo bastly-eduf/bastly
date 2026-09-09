@@ -86,3 +86,17 @@ Added:
 - parent / doctor / student tracking explanation
 
 Next homepage sections: Bastly Cards / Spin & Win, Parent experience, final CTA, FAQ, and footer.
+
+
+## Step 3D — Homepage completion
+
+Added:
+
+- Bastly Cards / Spin & Win section
+- parent dashboard preview
+- final homepage CTA
+- homepage FAQ section
+- reusable public footer with Bastly contact links
+
+At this milestone the public homepage structure is complete.
+Next recommended step: core database + authentication architecture before building live public course/doctor pages and dashboards.
