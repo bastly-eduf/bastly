@@ -72,3 +72,17 @@ fonts, and shared theme tokens live in `client/src/styles/global.css` under `@th
 
 Component-specific CSS files were removed in favor of colocated Tailwind utility classes.
 Small global styles are kept only for true global behavior, theme tokens, and the hero entrance animation.
+
+
+## Step 3C — Student Learning Hub + Performance Tracking
+
+Added:
+
+- student dashboard marketing preview
+- courses / quiz / homework / reward preview cards
+- weekly performance UI
+- 60% quiz + 40% attendance rating presentation
+- Star / A / B / C grade bands
+- parent / doctor / student tracking explanation
+
+Next homepage sections: Bastly Cards / Spin & Win, Parent experience, final CTA, FAQ, and footer.
