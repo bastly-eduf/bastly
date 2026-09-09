@@ -225,3 +225,56 @@ Admin can later unregister the enrollment. The User account and academic history
 ### Next
 
 Step 5B should build Modules / Lessons / YouTube video content and the Doctor course-management area.
+
+
+## Step 5B — Modules, Lessons, YouTube + Doctor workspace
+
+Added content models:
+
+```text
+Course
+  └── Module
+        └── Lesson
+              └── YouTube Unlisted video
+```
+
+Added Doctor-scoped APIs and UI:
+
+- Doctor overview
+- My Courses
+- Course content workspace
+- create/publish/unpublish/archive modules
+- create/publish/unpublish/archive lessons
+- YouTube URL parsing and validation
+- video preview through `youtube-nocookie.com`
+- active-student list scoped only to the doctor's own courses
+- strict server-side ownership checks on every doctor course/module/lesson action
+
+### YouTube security design
+
+Bastly stores the 11-character YouTube video ID instead of storing an iframe or exposing
+the original URL in public content.
+
+Doctor preview uses:
+
+`https://www.youtube-nocookie.com/embed/<VIDEO_ID>?rel=0&modestbranding=1`
+
+The future Student lesson API must only return published lesson/video data after verifying
+an ACTIVE enrollment whose access has not expired.
+
+Important limitation: YouTube Unlisted is not DRM. An authorized viewer can potentially
+extract/share the video link and screen recording cannot be reliably prevented in a browser.
+For this project's low-cost target, this is the strongest sensible free-video architecture.
+A protected paid video provider can replace it later without changing the Course/Module/Lesson
+structure.
+
+### Next
+
+Step 5C: assessments.
+
+- Quiz + Homework
+- MCQ + True/False
+- quiz = one attempt
+- homework = repeatable
+- doctor creates/publishes assessments
+- student attempt/result foundation

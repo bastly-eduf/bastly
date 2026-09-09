@@ -3,12 +3,17 @@ import { Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicOnlyRoute from '../components/auth/PublicOnlyRoute';
 import AdminLayout from '../layouts/AdminLayout';
+import DoctorLayout from '../layouts/DoctorLayout';
 import PublicLayout from '../layouts/PublicLayout';
 import AdminCoursesPage from '../pages/admin/AdminCoursesPage';
 import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
 import AdminEnrollmentsPage from '../pages/admin/AdminEnrollmentsPage';
 import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import RoleHomePage from '../pages/app/RoleHomePage';
+import DoctorCourseWorkspacePage from '../pages/doctor/DoctorCourseWorkspacePage';
+import DoctorCoursesPage from '../pages/doctor/DoctorCoursesPage';
+import DoctorOverviewPage from '../pages/doctor/DoctorOverviewPage';
+import DoctorStudentsPage from '../pages/doctor/DoctorStudentsPage';
 import CheckEmailPage from '../pages/public/CheckEmailPage';
 import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
 import HomePage from '../pages/public/HomePage';
@@ -55,7 +60,15 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute roles={['doctor']} />}>
-        <Route path="/doctor/*" element={<RoleHomePage role="Doctor" />} />
+        <Route path="/doctor" element={<DoctorLayout />}>
+          <Route index element={<DoctorOverviewPage />} />
+          <Route path="courses" element={<DoctorCoursesPage />} />
+          <Route
+            path="courses/:courseId"
+            element={<DoctorCourseWorkspacePage />}
+          />
+          <Route path="students" element={<DoctorStudentsPage />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['admin']} />}>
