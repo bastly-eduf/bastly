@@ -5,11 +5,13 @@ import PublicOnlyRoute from '../components/auth/PublicOnlyRoute';
 import AdminLayout from '../layouts/AdminLayout';
 import DoctorLayout from '../layouts/DoctorLayout';
 import PublicLayout from '../layouts/PublicLayout';
+import StudentLayout from '../layouts/StudentLayout';
 import AdminCoursesPage from '../pages/admin/AdminCoursesPage';
 import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
 import AdminEnrollmentsPage from '../pages/admin/AdminEnrollmentsPage';
 import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import RoleHomePage from '../pages/app/RoleHomePage';
+import DoctorAssessmentsPage from '../pages/doctor/DoctorAssessmentsPage';
 import DoctorCourseWorkspacePage from '../pages/doctor/DoctorCourseWorkspacePage';
 import DoctorCoursesPage from '../pages/doctor/DoctorCoursesPage';
 import DoctorOverviewPage from '../pages/doctor/DoctorOverviewPage';
@@ -24,6 +26,9 @@ import PlaceholderPage from '../pages/public/PlaceholderPage';
 import RegisterPage from '../pages/public/RegisterPage';
 import ResetPasswordPage from '../pages/public/ResetPasswordPage';
 import VerifyEmailPage from '../pages/public/VerifyEmailPage';
+import StudentAssessmentPage from '../pages/student/StudentAssessmentPage';
+import StudentAssessmentsPage from '../pages/student/StudentAssessmentsPage';
+import StudentOverviewPage from '../pages/student/StudentOverviewPage';
 
 export default function AppRoutes() {
   return (
@@ -52,7 +57,11 @@ export default function AppRoutes() {
       <Route path="/invite/parent" element={<InvitationPage kind="parent" />} />
 
       <Route element={<ProtectedRoute roles={['student']} />}>
-        <Route path="/student/*" element={<RoleHomePage role="Student" />} />
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<StudentOverviewPage />} />
+          <Route path="assessments" element={<StudentAssessmentsPage />} />
+          <Route path="assessments/:assessmentId" element={<StudentAssessmentPage />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['parent']} />}>
@@ -63,10 +72,8 @@ export default function AppRoutes() {
         <Route path="/doctor" element={<DoctorLayout />}>
           <Route index element={<DoctorOverviewPage />} />
           <Route path="courses" element={<DoctorCoursesPage />} />
-          <Route
-            path="courses/:courseId"
-            element={<DoctorCourseWorkspacePage />}
-          />
+          <Route path="courses/:courseId" element={<DoctorCourseWorkspacePage />} />
+          <Route path="courses/:courseId/assessments" element={<DoctorAssessmentsPage />} />
           <Route path="students" element={<DoctorStudentsPage />} />
         </Route>
       </Route>

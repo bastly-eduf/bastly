@@ -1,6 +1,7 @@
 import {
   Archive,
   ArrowLeft,
+  ClipboardCheck,
   Eye,
   EyeOff,
   Plus,
@@ -90,14 +91,23 @@ export default function DoctorCourseWorkspacePage() {
             : ''
         } · ${workspace?.activeStudentCount || 0} active students`}
         action={
-          <button
-            type="button"
-            onClick={() => setModuleModal(true)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-bastly-blue px-4 text-sm font-extrabold text-white"
-          >
-            <Plus size={17} />
-            Add module
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to={`/doctor/courses/${courseId}/assessments`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-white px-4 text-sm font-extrabold text-bastly-navy no-underline transition hover:border-bastly-blue/25 hover:text-bastly-blue-dark"
+            >
+              <ClipboardCheck size={17} />
+              Quizzes & homework
+            </Link>
+            <button
+              type="button"
+              onClick={() => setModuleModal(true)}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-bastly-blue px-4 text-sm font-extrabold text-white"
+            >
+              <Plus size={17} />
+              Add module
+            </button>
+          </div>
         }
       />
 

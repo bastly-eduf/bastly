@@ -87,6 +87,22 @@ export default function AdminCoursesPage() {
     }
   };
 
+  const toggleCourseStatus = async (course) => {
+    setBusy(true);
+    setError('');
+
+    try {
+      await api.patch(`/admin/academic/courses/${course._id}`, {
+        status: course.status === 'published' ? 'draft' : 'published',
+      });
+      await load();
+    } catch (err) {
+      setError(apiErrorMessage(err, 'Could not update course visibility.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <main className="px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
       <AdminPageHeader
@@ -144,17 +160,27 @@ export default function AdminCoursesPage() {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setError('');
-                    setGroupCourse(course);
-                  }}
-                  className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-line px-3.5 text-xs font-extrabold text-bastly-navy transition hover:border-bastly-blue/25 hover:text-bastly-blue-dark"
-                >
-                  <Layers3 size={15} />
-                  Add group
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => toggleCourseStatus(course)}
+                    className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-line px-3.5 text-xs font-extrabold text-bastly-navy transition hover:border-bastly-blue/25 hover:text-bastly-blue-dark disabled:opacity-50"
+                  >
+                    {course.status === 'published' ? 'Unpublish' : 'Publish course'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError('');
+                      setGroupCourse(course);
+                    }}
+                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-line px-3.5 text-xs font-extrabold text-bastly-navy transition hover:border-bastly-blue/25 hover:text-bastly-blue-dark"
+                  >
+                    <Layers3 size={15} />
+                    Add group
+                  </button>
+                </div>
               </div>
 
               <div className="mt-5 border-t border-line pt-4">

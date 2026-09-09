@@ -278,3 +278,65 @@ Step 5C: assessments.
 - homework = repeatable
 - doctor creates/publishes assessments
 - student attempt/result foundation
+
+## Step 5C — Quizzes + Homework + student attempts
+
+Added assessment models:
+
+```text
+Course
+  └── Assessment
+        ├── Quiz       → maximum 1 submitted attempt per student
+        └── Homework   → unlimited submitted attempts
+```
+
+Question types:
+
+- MCQ
+- True / False
+
+Security and grading:
+
+- correct answers are not included in the student's pre-submit API payload
+- grading happens on the server
+- students only receive assessments for published courses with ACTIVE + PAID + unexpired enrollments
+- quiz repeat submission is rejected by the backend, not just the UI
+- homework can be repeated
+- every submitted result is stored as a new attempt record
+- results store percentage plus Star / A / B / C
+
+Doctor experience:
+
+- open a course → Quizzes & Homework
+- create Quiz or Homework
+- add MCQ and True/False questions
+- choose correct answers and optional explanations
+- publish/unpublish/archive
+- see attempts, student count, and average score
+
+Student experience:
+
+- real Student dashboard foundation
+- list available quizzes/homework
+- take assessments
+- immediate server-graded results
+- answer review after submission
+- homework retry flow
+
+Grade bands:
+
+- Star: 90–100%
+- A: 80–89%
+- B: 70–79%
+- C: below 70%
+
+### Next
+
+Step 5D: Attendance + weekly performance.
+
+- doctor creates/opens attendance sessions for a group
+- doctor marks Present / Absent
+- weekly rating uses Quiz results only; Homework stays practice-only
+- current rating direction: 60% quiz performance + 40% attendance
+- Doctor / Student / Parent tracking views
+- all-Star quiz eligibility feeds the Bastly Spin system
