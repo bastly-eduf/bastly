@@ -1,4 +1,6 @@
 import Hero from '../../components/common/Hero';
+import CoursesPreview from '../../components/home/CoursesPreview';
+import ValueStrip from '../../components/home/ValueStrip';
 import Seo from '../../components/seo/Seo';
 
 export default function HomePage() {
@@ -13,7 +15,10 @@ export default function HomePage() {
       <main>
         <Hero />
 
-        <div id="homepage-content" className="homepage-content-anchor" aria-hidden="true" />
+        <div id="homepage-content">
+          <ValueStrip />
+          <CoursesPreview />
+        </div>
       </main>
     </>
   );

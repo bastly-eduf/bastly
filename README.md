@@ -50,15 +50,18 @@ API: `http://localhost:5000`
 
 ## Current milestone
 
-**Step 2 — Navbar + Hero**
+**Step 3A — Homepage Value Strip + Featured Courses**
 
 Completed:
 
 - Step 1 project/security/SEO foundation
-- responsive transparent-to-solid public navbar
-- accessible mobile navigation
-- responsive hero using separate desktop/mobile WebP backgrounds
-- homepage hero CTA structure
-- reduced-motion support and responsive hero typography
+- Step 2 responsive navbar + hero
+- Bastly value strip
+- responsive featured-courses section
+- first confirmed course/instructor seed data
+- temporary 5,000 EGP development pricing
 
-Next: build the remaining homepage sections in the locked Bastly section order.
+Featured course data in this step uses confirmed public instructor information:
+Dr. Radwa Antar (Biology O Level), Dr. Mohamed Emad (Physics IGCSE), and Eng. Yehia Badawi (ICT IGCSE).
+
+Next: Meet Your Doctors + How Bastly Works.
