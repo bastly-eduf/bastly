@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-const requiredInProduction = ['CLIENT_URL', 'MONGODB_URI', 'COOKIE_SECRET'];
+const requiredInProduction = ['CLIENT_URL', 'MONGODB_URI', 'JWT_SECRET'];
 
 if (process.env.NODE_ENV === 'production') {
   const missing = requiredInProduction.filter((key) => !process.env[key]);
@@ -15,5 +15,9 @@ export const env = Object.freeze({
   port: Number(process.env.PORT || 5000),
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bastly',
-  cookieSecret: process.env.COOKIE_SECRET || 'development-only-secret',
+  jwtSecret:
+    process.env.JWT_SECRET ||
+    'development-only-secret-change-before-production-please',
+  requireEmailVerification:
+    String(process.env.REQUIRE_EMAIL_VERIFICATION).toLowerCase() === 'true',
 });

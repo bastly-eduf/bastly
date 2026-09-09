@@ -9,3 +9,14 @@ export const apiLimiter = rateLimit({
     error: 'Too many requests. Please try again shortly.',
   },
 });
+
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: {
+    error: 'Too many authentication attempts. Please wait and try again.',
+  },
+});

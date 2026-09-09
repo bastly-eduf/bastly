@@ -6,7 +6,8 @@ export async function connectDatabase() {
 
   await mongoose.connect(env.mongoUri, {
     autoIndex: env.nodeEnv !== 'production',
+    serverSelectionTimeoutMS: 10000,
   });
 
-  console.log('MongoDB connected');
+  console.log(`MongoDB connected: ${mongoose.connection.name}`);
 }

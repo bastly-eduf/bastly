@@ -25,12 +25,13 @@ app.use(
     origin: env.clientUrl,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 
 app.use(express.json({ limit: '250kb' }));
 app.use(express.urlencoded({ extended: false, limit: '250kb' }));
-app.use(cookieParser(env.cookieSecret));
+app.use(cookieParser());
 
 app.use('/api', apiLimiter);
 app.use('/api', apiRoutes);

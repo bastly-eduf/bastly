@@ -100,3 +100,33 @@ Added:
 
 At this milestone the public homepage structure is complete.
 Next recommended step: core database + authentication architecture before building live public course/doctor pages and dashboards.
+
+
+## Step 4A — MongoDB + authentication foundation
+
+Added:
+
+- MongoDB/Mongoose user, student profile, parent relationship, auth-token, and audit-log models
+- student self-registration API
+- secure bcrypt password hashing
+- JWT session stored in an HttpOnly cookie
+- login / logout / current-user API endpoints
+- authentication + role authorization middleware
+- Zod validation on both client and server
+- authentication-specific rate limiting
+- Axios API client with credentials enabled
+- real Bastly login and student-registration screens
+- temporary role-area destinations for Student / Parent / Doctor / Admin
+
+### Important production note
+
+The intended deployment should keep the frontend and API on the same Bastly site
+(for example `www.example.com` + `api.example.com`) so secure SameSite cookies behave predictably.
+
+### Still upcoming
+
+- email verification + password reset through Gmail
+- secure doctor invite / parent invite acceptance
+- protected client routing / global auth context
+- Admin user management
+- core academic models (Course, Group, Enrollment, Lesson, Assessment, Attendance, Performance, Rewards)
