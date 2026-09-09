@@ -178,4 +178,50 @@ Build the academic data foundation:
 
 Course → Group → Enrollment → Modules/Lessons → Assessments → Attendance → Weekly Performance → Bastly Cards.
 
-- browser state-changing API requests are checked against the configured frontend Origin as an additional CSRF defense
+
+## Step 5A — Academic core + real Admin operations
+
+Added the first real academic data layer:
+
+- DoctorProfile (public identity separated from login account)
+- Course
+- Group
+- Enrollment
+- explicit course `accessEndDate`
+- pending → paid/active enrollment flow
+- admin unregister flow that revokes access without deleting history
+- enrollment status history for future reactivation/auditing
+- doctor invitation can now link directly to an existing DoctorProfile
+
+Added the first real Admin UI:
+
+- Admin Overview
+- Doctors
+- Courses & Groups
+- Enrollments
+- secure admin-only APIs for all of the above
+
+### Locked course structure
+
+```text
+Doctor Profile
+  └── Course (different level/topic = different course)
+        └── Group (same course, different cohort/timetable)
+              └── Enrollment
+```
+
+### Payment/access rule
+
+Enrollment starts `pending`.
+After WhatsApp payment is confirmed by Admin:
+
+- `paymentStatus = paid`
+- `status = active`
+- access begins immediately
+- enrollment snapshots the Course `accessEndDate`
+
+Admin can later unregister the enrollment. The User account and academic history remain intact.
+
+### Next
+
+Step 5B should build Modules / Lessons / YouTube video content and the Doctor course-management area.

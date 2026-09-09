@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid ID.');
+
 const strongPassword = z
   .string()
   .min(8, 'Password must be at least 8 characters.')
@@ -12,6 +14,7 @@ export const createDoctorInviteSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
   email: z.string().trim().toLowerCase().email(),
   phone: z.string().trim().max(30).optional().default(''),
+  doctorProfileId: objectId.optional(),
 });
 
 export const acceptInviteSchema = z

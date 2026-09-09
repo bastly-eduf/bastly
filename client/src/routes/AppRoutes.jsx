@@ -2,7 +2,12 @@ import { Route, Routes } from 'react-router-dom';
 
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicOnlyRoute from '../components/auth/PublicOnlyRoute';
+import AdminLayout from '../layouts/AdminLayout';
 import PublicLayout from '../layouts/PublicLayout';
+import AdminCoursesPage from '../pages/admin/AdminCoursesPage';
+import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
+import AdminEnrollmentsPage from '../pages/admin/AdminEnrollmentsPage';
+import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import RoleHomePage from '../pages/app/RoleHomePage';
 import CheckEmailPage from '../pages/public/CheckEmailPage';
 import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
@@ -54,7 +59,12 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute roles={['admin']} />}>
-        <Route path="/admin/*" element={<RoleHomePage role="Admin" />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminOverviewPage />} />
+          <Route path="doctors" element={<AdminDoctorsPage />} />
+          <Route path="courses" element={<AdminCoursesPage />} />
+          <Route path="enrollments" element={<AdminEnrollmentsPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 
+import DoctorProfile from '../models/DoctorProfile.js';
 import ParentRelationship from '../models/ParentRelationship.js';
 import User from '../models/User.js';
 import {
@@ -65,6 +66,20 @@ export async function acceptDoctorInvitation(req, res) {
     throw new HttpError(409, 'An account already exists with this email.');
   }
 
+  const doctorProfileId = token.metadata?.doctorProfileId || null;
+
+  if (doctorProfileId) {
+    const profile = await DoctorProfile.findById(doctorProfileId);
+
+    if (!profile) {
+      throw new HttpError(400, 'The linked doctor profile no longer exists.');
+    }
+
+    if (profile.user) {
+      throw new HttpError(409, 'That doctor profile is already linked to an account.');
+    }
+  }
+
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
   const user = await User.create({
@@ -76,6 +91,12 @@ export async function acceptDoctorInvitation(req, res) {
     status: 'active',
     emailVerifiedAt: new Date(),
   });
+
+  if (doctorProfileId) {
+    await DoctorProfile.findByIdAndUpdate(doctorProfileId, {
+      user: user._id,
+    });
+  }
 
   await consumeOneTimeToken(token);
 
@@ -89,6 +110,7 @@ export async function acceptDoctorInvitation(req, res) {
     action: 'doctor.invitation.accepted',
     targetType: 'User',
     targetId: user._id,
+    metadata: { doctorProfileId },
     ip: req.ip,
   });
 

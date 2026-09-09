@@ -8,13 +8,19 @@ import {
 } from './email.service.js';
 import { createOneTimeToken } from './token.service.js';
 
-export async function createDoctorInvitation({ fullName, email, phone = '' }) {
+export async function createDoctorInvitation({
+  fullName,
+  email,
+  phone = '',
+  doctorProfileId = null,
+}) {
   const { rawToken, record } = await createOneTimeToken({
     type: 'doctor_invite',
     targetEmail: email,
     metadata: {
       fullName,
       phone,
+      doctorProfileId,
     },
     ttlMinutes: 60 * 48,
   });
