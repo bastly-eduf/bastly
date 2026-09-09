@@ -1,5 +1,3 @@
-import './ValueStrip.css';
-
 const values = [
   {
     key: 'instructors',
@@ -49,16 +47,35 @@ const values = [
 
 export default function ValueStrip() {
   return (
-    <section className="value-strip" aria-label="Why students choose Bastly">
-      <div className="container value-strip__grid">
-        {values.map((item) => (
-          <article className="value-strip__item" key={item.key}>
-            <div className="value-strip__icon">{item.icon}</div>
+    <section className="relative z-10 border-b border-line bg-white" aria-label="Why students choose Bastly">
+      <div className="mx-auto grid w-[min(1200px,calc(100%-2rem))] grid-cols-1 md:grid-cols-2 lg:w-[min(1200px,calc(100%-4rem))] xl:grid-cols-4">
+        {values.map((item, index) => (
+          <article
+            key={item.key}
+            className={[
+              'grid min-w-0 grid-cols-[auto_1fr] items-start gap-3.5 py-5 md:px-6',
+              index > 0 ? 'border-t border-line md:border-t-0' : '',
+              index % 2 === 1 ? 'md:border-l md:border-line' : '',
+              index >= 2 ? 'md:border-t md:border-line xl:border-t-0' : '',
+              index > 0 ? 'xl:border-l xl:border-line' : '',
+            ].join(' ')}
+          >
+            <div className="grid size-[42px] place-items-center rounded-[13px] bg-bastly-blue-pale text-bastly-blue">
+              <div className="[&_svg]:size-[23px] [&_svg]:fill-none [&_svg]:stroke-current [&_svg]:stroke-[1.7] [&_svg]:[stroke-linecap:round] [&_svg]:[stroke-linejoin:round]">
+                {item.icon}
+              </div>
+            </div>
 
-            <div className="value-strip__copy">
-              <p className="value-strip__value">{item.value}</p>
-              <h2>{item.label}</h2>
-              <p>{item.detail}</p>
+            <div className="min-w-0">
+              <p className="mb-0.5 font-heading text-[0.78rem] font-extrabold tracking-[0.025em] text-bastly-blue">
+                {item.value}
+              </p>
+              <h2 className="mb-1 font-heading text-[0.98rem] font-bold tracking-[-0.02em] text-bastly-navy">
+                {item.label}
+              </h2>
+              <p className="mb-0 text-[0.8rem] leading-[1.55] text-muted">
+                {item.detail}
+              </p>
             </div>
           </article>
         ))}

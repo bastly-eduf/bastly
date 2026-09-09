@@ -4,7 +4,7 @@ MERN learning platform for **Students, Parents, Doctors/Instructors, and Admins*
 
 ## Stack
 
-- React + Vite
+- React + Vite + Tailwind CSS v4
 - Node.js + Express
 - MongoDB + Mongoose
 - Cloudflare-ready public frontend
@@ -50,18 +50,25 @@ API: `http://localhost:5000`
 
 ## Current milestone
 
-**Step 3A — Homepage Value Strip + Featured Courses**
+**Step 3B — Meet Your Doctors + How Bastly Works**
 
 Completed:
 
 - Step 1 project/security/SEO foundation
 - Step 2 responsive navbar + hero
-- Bastly value strip
-- responsive featured-courses section
-- first confirmed course/instructor seed data
-- temporary 5,000 EGP development pricing
+- Step 3A Bastly value strip + featured courses
+- responsive featured-doctors section using supplied instructor portraits
+- homepage doctor links prepared for future SEO profile pages
+- four-step enrollment/learning flow
+- WhatsApp enrollment contact link using Bastly's number
 
-Featured course data in this step uses confirmed public instructor information:
-Dr. Radwa Antar (Biology O Level), Dr. Mohamed Emad (Physics IGCSE), and Eng. Yehia Badawi (ICT IGCSE).
+Next: Student Learning Hub + Performance Tracking sections.
 
-Next: Meet Your Doctors + How Bastly Works.
+
+## Styling architecture
+
+The frontend now uses **Tailwind CSS v4** through the official Vite plugin. Bastly brand colors,
+fonts, and shared theme tokens live in `client/src/styles/global.css` under `@theme`.
+
+Component-specific CSS files were removed in favor of colocated Tailwind utility classes.
+Small global styles are kept only for true global behavior, theme tokens, and the hero entrance animation.
