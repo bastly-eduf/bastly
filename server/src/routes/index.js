@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import academicAdminRoutes from './academicAdmin.routes.js';
+import accountSettingsRoutes from './accountSettings.routes.js';
 import adminRoutes from './admin.routes.js';
 import authRoutes from './auth.routes.js';
 import doctorAssessmentRoutes from './doctorAssessment.routes.js';
@@ -41,6 +42,7 @@ router.use('/student', studentLearningRoutes);
 router.use('/student/rewards', studentRewardRoutes);
 
 router.use('/parent', parentRouter);
+router.use('/account', accountSettingsRoutes);
 router.use('/account', recoveryRoutes);
 
 export default router;

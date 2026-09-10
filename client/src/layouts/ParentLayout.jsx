@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Settings,
   UsersRound,
   X,
 } from 'lucide-react';
@@ -22,6 +23,11 @@ const navigation = [
     to: '/parent',
     icon: LayoutDashboard,
     end: true,
+  },
+  {
+    label: 'Settings',
+    to: '/parent/settings',
+    icon: Settings,
   },
 ];
 

@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Settings,
   UsersRound,
   X,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ const navigation = [
   { label: 'Courses', to: '/admin/courses', icon: BookOpen },
   { label: 'Enrollments', to: '/admin/enrollments', icon: GraduationCap },
   { label: 'Bastly Cards', to: '/admin/rewards', icon: Gift },
+  { label: 'Settings', to: '/admin/settings', icon: Settings },
 ];
 
 export default function AdminLayout() {

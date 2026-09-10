@@ -903,3 +903,109 @@ Step 7 should be launch-focused rather than another large product feature:
 9. PWA install/offline checks
 10. performance/accessibility/mobile QA
 11. Search Console + production launch checklist
+
+
+## Step 7A — Account settings + session security + route code splitting
+
+This is the first launch-mode step.
+
+### Shared account settings
+
+Every authenticated role now has a Settings page:
+
+```text
+/student/settings
+/parent/settings
+/doctor/settings
+/admin/settings
+```
+
+The page allows:
+
+- private full-name update
+- private phone update
+- Student school / academic-level update
+- read-only account email
+- email verification status
+- last-login display
+- password-changed display
+- password change
+- sign out other devices
+
+Doctor account settings intentionally do **not** edit the public DoctorProfile.
+The public instructor profile remains Admin-controlled.
+
+Email is intentionally read-only for now because changing an account email correctly needs a
+dedicated re-verification flow and can affect Parent linking / identity assumptions.
+
+### Password security
+
+Changing password requires the current password.
+
+The server:
+
+1. verifies the current password
+2. rejects reusing the same password
+3. hashes the new password with bcrypt
+4. increments `tokenVersion`
+5. records `passwordChangedAt`
+6. invalidates all older Bastly sessions
+7. issues a fresh HttpOnly cookie to the current device
+
+So the user stays logged in on the device where they changed the password while previous
+sessions become invalid.
+
+### Sign out other devices
+
+`POST /api/account/settings/invalidate-sessions`
+
+also increments `tokenVersion` and immediately issues a fresh cookie to the current device.
+Every older session token is rejected by the existing `authenticate` middleware.
+
+### Frontend resilience
+
+Added `AppErrorBoundary`.
+
+A render/lazy-chunk failure now shows a Bastly recovery screen with Reload/Home actions instead
+of leaving the user with a blank white page.
+
+### Code splitting
+
+`AppRoutes.jsx` now uses `React.lazy()` for:
+
+- all public pages
+- all Student pages
+- all Parent pages
+- all Doctor pages
+- all Admin pages
+- all private layouts
+- Account Settings
+
+This directly addresses the large single-JS-bundle warning seen during Step 6D.
+
+No artificial `chunkSizeWarningLimit` increase was used. We want to improve the bundle rather
+than hide Rollup's warning.
+
+After installing Step 7A, run:
+
+```text
+npm run build
+```
+
+and compare the new `dist/assets/*.js` output with the previous single ~733 kB JS chunk.
+
+### Next
+
+Step 7B should prepare the real deployment topology and production config:
+
+- frontend host
+- Render API
+- production MongoDB ownership
+- Gmail App Password / verification mail
+- final frontend canonical domain
+- optional API custom subdomain
+- Vercel/host rewrites for direct SPA routes + generated SEO HTML shells
+- secure cookie / CORS / Origin end-to-end testing
+
+Once the real domains exist, perform the final SEO/PWA/security/performance QA against those
+actual URLs instead of localhost.

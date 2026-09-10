@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Settings,
   UsersRound,
   X,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ const navigation = [
   { label: 'Students', to: '/doctor/students', icon: UsersRound },
   { label: 'Attendance', to: '/doctor/attendance', icon: CalendarCheck },
   { label: 'Performance', to: '/doctor/performance', icon: BarChart3 },
+  { label: 'Settings', to: '/doctor/settings', icon: Settings },
 ];
 
 export default function DoctorLayout() {

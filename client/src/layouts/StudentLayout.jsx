@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Settings,
   TrendingUp,
   X,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ const links = [
   ['Quizzes & Homework', '/student/assessments', ClipboardCheck, false],
   ['Performance', '/student/performance', TrendingUp, false],
   ['Bastly Rewards', '/student/rewards', Gift, false],
+  ['Settings', '/student/settings', Settings, false],
 ];
 
 export default function StudentLayout() {
