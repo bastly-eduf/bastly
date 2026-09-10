@@ -1120,3 +1120,97 @@ The next work should happen against the actual hosting accounts:
 7. test auth/cookies through the real URLs
 8. connect the final domain when available
 9. run production QA
+
+## Step 7C — Cloudflare R2 media pipeline
+
+Bastly now has a reusable Admin media system for:
+
+```text
+Doctor portraits
+Bastly Card partner logos
+Bastly Card reward images
+```
+
+### Optimization happens before Cloudflare
+
+The source JPG/PNG/WebP is processed in the Admin browser with Canvas before any upload.
+Bastly generates predefined WebP variants and uploads only those production-ready files.
+
+The original source image is not sent to Render and is not stored in MongoDB/R2 by this flow.
+
+### Direct R2 upload
+
+The Admin client requests short-lived upload URLs from:
+
+```text
+GET  /api/admin/media/config
+POST /api/admin/media/uploads
+POST /api/admin/media/uploads/commit
+DELETE /api/admin/media/:entityType/:entityId/:slot
+```
+
+The API:
+
+- requires authenticated Admin role
+- validates the target Doctor/Reward exists
+- validates the exact allowed variant names/dimensions/file-size ceilings
+- creates exact R2 object keys itself
+- signs WebP-only PUT URLs
+- verifies every uploaded object with R2 `HeadObject` before committing it
+- stores only media keys/metadata in MongoDB
+- deletes the previous R2 variant set best-effort after a successful replacement
+- logs media start/commit/remove events to the existing AuditLog system
+- rate-limits media signing/commit endpoints
+
+### Backward compatibility
+
+Existing bundled Doctor `imageUrl` paths still work.
+
+When `imageMedia` exists, the R2 image takes priority. This lets the current 18 bundled
+portraits stay intact while the academy gradually replaces/manages them through Admin.
+
+### Rewards
+
+`RewardCard` now supports both:
+
+```text
+partnerLogoMedia
+rewardImageMedia
+```
+
+New reward assignments snapshot the resolved logo/reward image URL at the moment the card is
+won, so already-won cards remain visually stable.
+
+### R2 ENV contract
+
+```text
+CLOUDFLARE_R2_ACCOUNT_ID=
+CLOUDFLARE_R2_ACCESS_KEY_ID=
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=
+CLOUDFLARE_R2_BUCKET=
+CLOUDFLARE_R2_PUBLIC_BASE_URL=
+```
+
+Production configuration checks now require these values, but development remains safe when
+they are absent: the Admin uploader simply shows `R2 not configured` and existing static images
+continue working.
+
+See `R2_MEDIA_SETUP.md` before adding the owner's Cloudflare credentials.
+
+### Step 7C local install note
+
+Step 7C adds the server-only AWS S3-compatible SDK used to sign Cloudflare R2 requests:
+
+```text
+@aws-sdk/client-s3
+@aws-sdk/s3-request-presigner
+```
+
+After copying this step over an existing Bastly checkout, run:
+
+```text
+npm install --prefix server
+```
+
+before `npm run dev`. This also updates `server/package-lock.json`; commit that lockfile with the
+rest of Step 7C so Render's later `npm ci` build is reproducible.

@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import { mediaAssetSchema } from './schemas/mediaAsset.schema.js';
+
 const doctorProfileSchema = new mongoose.Schema(
   {
     user: {
@@ -52,6 +54,10 @@ const doctorProfileSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+    },
+    imageMedia: {
+      type: mediaAssetSchema,
+      default: null,
     },
     isFeatured: {
       type: Boolean,

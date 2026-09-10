@@ -9,9 +9,9 @@ export default function DoctorCard({ doctor }) {
         className="relative block aspect-[4/4.55] overflow-hidden bg-gradient-to-b from-bastly-blue-pale to-[#edf4f9]"
         aria-label={`View ${doctor.displayName}`}
       >
-        {doctor.imageUrl ? (
+        {doctor.imageVariants?.card || doctor.imageUrl ? (
           <img
-            src={doctor.imageUrl}
+            src={doctor.imageVariants?.card || doctor.imageUrl}
             alt={doctor.displayName}
             loading="lazy"
             decoding="async"

@@ -144,6 +144,7 @@ export default function CoursePage() {
         }
         canonicalPath={`/courses/${course?.slug || slug}`}
         image={
+          course?.doctorProfile?.imageVariants?.profile ||
           course?.doctorProfile?.imageUrl ||
           '/brand/icon-512.png'
         }

@@ -6,6 +6,8 @@ import RewardCard from '../models/RewardCard.js';
 import SpinCredit from '../models/SpinCredit.js';
 import { createNotification } from './notification.service.js';
 import { HttpError } from '../utils/httpError.js';
+import { rewardMediaPresentation } from './media.service.js';
+import { publicR2Url } from './r2.service.js';
 import { endOfWeekUtc, startOfWeekUtc } from '../utils/week.js';
 
 const STALE_PROCESSING_MS = 5 * 60 * 1000;
@@ -293,7 +295,7 @@ async function reserveRewardInventory() {
       ],
     })
       .select(
-        'partnerName partnerLogoUrl title offer description instructions redemptionCode expiresAt quantityRemaining',
+        'partnerName partnerLogoUrl partnerLogoMedia rewardImageMedia title offer description instructions redemptionCode expiresAt quantityRemaining',
       )
       .lean();
 
@@ -343,14 +345,54 @@ async function reserveRewardInventory() {
 }
 
 function rewardSnapshot(reward) {
+  const media = rewardMediaPresentation(reward);
+  const partnerLogoKey =
+    reward.partnerLogoMedia?.variants?.thumb?.key ||
+    reward.partnerLogoMedia?.variants?.master?.key ||
+    '';
+  const rewardImageKey =
+    reward.rewardImageMedia?.variants?.card?.key ||
+    reward.rewardImageMedia?.variants?.master?.key ||
+    '';
+
   return {
     partnerName: reward.partnerName,
-    partnerLogoUrl: reward.partnerLogoUrl || '',
+    partnerLogoUrl: media.partnerLogoUrl,
+    partnerLogoKey,
+    rewardImageUrl: media.rewardImageUrl,
+    rewardImageKey,
     title: reward.title,
     offer: reward.offer,
     description: reward.description || '',
     instructions: reward.instructions || '',
     redemptionCode: reward.redemptionCode || '',
+  };
+}
+
+function decorateRewardAssignment(assignment) {
+  if (!assignment?.rewardSnapshot) {
+    return assignment;
+  }
+
+  const snapshot = assignment.rewardSnapshot;
+
+  return {
+    ...assignment,
+    rewardSnapshot: {
+      ...snapshot,
+      partnerLogoUrl:
+        (snapshot.partnerLogoKey
+          ? publicR2Url(snapshot.partnerLogoKey)
+          : '') ||
+        snapshot.partnerLogoUrl ||
+        '',
+      rewardImageUrl:
+        (snapshot.rewardImageKey
+          ? publicR2Url(snapshot.rewardImageKey)
+          : '') ||
+        snapshot.rewardImageUrl ||
+        '',
+    },
   };
 }
 
@@ -494,7 +536,7 @@ export async function studentRewardDashboard(studentId) {
       ],
     })
       .select(
-        'partnerName partnerLogoUrl title offer quantityRemaining expiresAt',
+        'partnerName partnerLogoUrl partnerLogoMedia rewardImageMedia title offer quantityRemaining expiresAt',
       )
       .sort({ sortOrder: 1, createdAt: 1 })
       .lean(),
@@ -505,15 +547,22 @@ export async function studentRewardDashboard(studentId) {
     availableSpinCount: credits.filter(
       (credit) => credit.status === 'earned',
     ).length,
-    assignments,
-    wheelRewards: wheelRewards.map((reward) => ({
-      _id: reward._id,
-      partnerName: reward.partnerName,
-      partnerLogoUrl: reward.partnerLogoUrl || '',
-      title: reward.title,
-      offer: reward.offer,
-      expiresAt: reward.expiresAt,
-    })),
+    assignments: assignments.map(
+      decorateRewardAssignment,
+    ),
+    wheelRewards: wheelRewards.map((reward) => {
+      const media = rewardMediaPresentation(reward);
+
+      return {
+        _id: reward._id,
+        partnerName: reward.partnerName,
+        partnerLogoUrl: media.partnerLogoUrl,
+        rewardImageUrl: media.rewardImageUrl,
+        title: reward.title,
+        offer: reward.offer,
+        expiresAt: reward.expiresAt,
+      };
+    }),
   };
 }
 

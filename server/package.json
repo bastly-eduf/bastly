@@ -9,7 +9,8 @@
     "check": "node --check src/server.js",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "check:prod": "node src/scripts/checkProductionConfig.js",
-    "check:email": "node src/scripts/verifyEmailTransport.js"
+    "check:email": "node src/scripts/verifyEmailTransport.js",
+    "check:r2": "node src/scripts/verifyR2.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
@@ -22,7 +23,9 @@
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
     "zod": "^4.1.5",
-    "nodemailer": "^7.0.6"
+    "nodemailer": "^7.0.6",
+    "@aws-sdk/client-s3": "^3.1128.0",
+    "@aws-sdk/s3-request-presigner": "^3.1128.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

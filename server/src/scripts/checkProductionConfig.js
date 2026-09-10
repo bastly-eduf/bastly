@@ -17,6 +17,11 @@ const mongoUri = required('MONGODB_URI');
 const jwtSecret = required('JWT_SECRET');
 const gmailUser = required('GMAIL_USER');
 const gmailAppPassword = required('GMAIL_APP_PASSWORD');
+const r2AccountId = required('CLOUDFLARE_R2_ACCOUNT_ID');
+const r2AccessKeyId = required('CLOUDFLARE_R2_ACCESS_KEY_ID');
+const r2SecretAccessKey = required('CLOUDFLARE_R2_SECRET_ACCESS_KEY');
+const r2Bucket = required('CLOUDFLARE_R2_BUCKET');
+const r2PublicBaseUrl = required('CLOUDFLARE_R2_PUBLIC_BASE_URL');
 
 if (clientUrl) {
   try {
@@ -75,6 +80,33 @@ if (
   errors.push(
     'GMAIL_APP_PASSWORD does not look like an App Password.',
   );
+}
+
+if (r2PublicBaseUrl) {
+  try {
+    const url = new URL(r2PublicBaseUrl);
+    if (url.protocol !== 'https:') {
+      errors.push('CLOUDFLARE_R2_PUBLIC_BASE_URL must use https in production.');
+    }
+  } catch {
+    errors.push('CLOUDFLARE_R2_PUBLIC_BASE_URL must be a valid URL.');
+  }
+}
+
+if (r2AccountId && !/^[a-f0-9]{32}$/i.test(r2AccountId)) {
+  console.warn('[Bastly] CLOUDFLARE_R2_ACCOUNT_ID does not look like the usual 32-character account ID. Verify it before launch.');
+}
+
+if (r2AccessKeyId && r2AccessKeyId.length < 10) {
+  errors.push('CLOUDFLARE_R2_ACCESS_KEY_ID looks too short.');
+}
+
+if (r2SecretAccessKey && r2SecretAccessKey.length < 20) {
+  errors.push('CLOUDFLARE_R2_SECRET_ACCESS_KEY looks too short.');
+}
+
+if (r2Bucket && !/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/i.test(r2Bucket)) {
+  errors.push('CLOUDFLARE_R2_BUCKET has an unexpected bucket-name format.');
 }
 
 if (errors.length) {

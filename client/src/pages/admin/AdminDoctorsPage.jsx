@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import MediaImageUploader from '../../components/admin/MediaImageUploader';
 import Modal from '../../components/admin/Modal';
 import StatusPill from '../../components/admin/StatusPill';
 import {
@@ -40,7 +41,10 @@ function editForm(profile) {
     displayName: profile.displayName || '',
     subject: profile.subject || '',
     levels: (profile.levels || []).join(', '),
-    imageUrl: profile.imageUrl || '',
+    imageUrl:
+      profile.legacyImageUrl ??
+      profile.imageUrl ??
+      '',
     bio: profile.bio || '',
     qualifications: (profile.qualifications || []).join(
       '\n',
@@ -53,6 +57,7 @@ function editForm(profile) {
 
 export default function AdminDoctorsPage() {
   const [profiles, setProfiles] = useState([]);
+  const [mediaConfig, setMediaConfig] = useState(null);
   const [form, setForm] = useState(blankForm);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] =
@@ -65,10 +70,19 @@ export default function AdminDoctorsPage() {
   const [inviteUrl, setInviteUrl] = useState('');
 
   const load = async () => {
-    const { data } = await api.get(
-      '/admin/academic/doctor-profiles',
-    );
-    setProfiles(data.doctorProfiles || []);
+    const [profilesResponse, mediaResponse] =
+      await Promise.all([
+        api.get('/admin/academic/doctor-profiles'),
+        api.get('/admin/media/config'),
+      ]);
+
+    const nextProfiles =
+      profilesResponse.data.doctorProfiles || [];
+
+    setProfiles(nextProfiles);
+    setMediaConfig(mediaResponse.data || null);
+
+    return nextProfiles;
   };
 
   useEffect(() => {
@@ -134,6 +148,22 @@ export default function AdminDoctorsPage() {
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const refreshEditingProfile = async () => {
+    const nextProfiles = await load();
+
+    if (!editingProfile?._id) return;
+
+    const refreshed = nextProfiles.find(
+      (profile) =>
+        profile._id === editingProfile._id,
+    );
+
+    if (refreshed) {
+      setEditingProfile(refreshed);
+      setForm(editForm(refreshed));
     }
   };
 
@@ -359,13 +389,31 @@ export default function AdminDoctorsPage() {
           />
 
           <Field
-            label="Image path"
+            label="Legacy/static image path"
             value={form.imageUrl}
             onChange={(value) =>
               setForm({ ...form, imageUrl: value })
             }
             placeholder="/doctors/dr-name.webp"
+            hint="Optional fallback for the original bundled portraits. Cloudflare R2 upload takes priority once configured."
           />
+
+          {editingProfile ? (
+            <MediaImageUploader
+              mediaConfig={mediaConfig}
+              entityType="doctor"
+              entityId={editingProfile._id}
+              slot="portrait"
+              label="Doctor portrait"
+              description="Bastly converts JPG/PNG/WebP in the browser into optimized WebP master, profile, card, and thumbnail variants before uploading directly to Cloudflare R2."
+              currentUrl={editingProfile.imageUrl || ''}
+              onChanged={refreshEditingProfile}
+            />
+          ) : (
+            <div className="rounded-2xl bg-bastly-blue-pale px-4 py-3 text-xs leading-6 text-muted">
+              Create the Doctor profile first. Then open Edit to upload the portrait securely to Cloudflare R2.
+            </div>
+          )}
 
           <TextArea
             label="Public bio"

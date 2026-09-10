@@ -13,6 +13,7 @@ import {
 import { HttpError } from '../utils/httpError.js';
 import { slugify } from '../utils/slugify.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import { doctorMediaPresentation } from '../services/media.service.js';
 import {
   activateEnrollment,
   createOrResetPendingEnrollment,
@@ -35,6 +36,33 @@ async function uniqueSlug(Model, seed, ignoreId = null) {
   }
 
   return candidate;
+}
+
+function decorateDoctorProfile(profile) {
+  if (!profile) return profile;
+
+  const plain =
+    typeof profile.toObject === 'function'
+      ? profile.toObject()
+      : profile;
+  const media = doctorMediaPresentation(plain);
+
+  return {
+    ...plain,
+    legacyImageUrl: plain.imageUrl || '',
+    ...media,
+  };
+}
+
+function decorateCourse(course) {
+  if (!course?.doctorProfile) return course;
+
+  return {
+    ...course,
+    doctorProfile: decorateDoctorProfile(
+      course.doctorProfile,
+    ),
+  };
 }
 
 export async function overview(req, res) {
@@ -72,7 +100,9 @@ export async function listDoctorProfiles(req, res) {
     .sort({ sortOrder: 1, displayName: 1 })
     .lean();
 
-  return res.json({ doctorProfiles: profiles });
+  return res.json({
+    doctorProfiles: profiles.map(decorateDoctorProfile),
+  });
 }
 
 export async function createDoctorProfile(req, res) {
@@ -92,7 +122,9 @@ export async function createDoctorProfile(req, res) {
     ip: req.ip,
   });
 
-  return res.status(201).json({ doctorProfile: profile });
+  return res.status(201).json({
+    doctorProfile: decorateDoctorProfile(profile),
+  });
 }
 
 export async function updateDoctorProfile(req, res) {
@@ -123,12 +155,14 @@ export async function updateDoctorProfile(req, res) {
     ip: req.ip,
   });
 
-  return res.json({ doctorProfile: profile });
+  return res.json({
+    doctorProfile: decorateDoctorProfile(profile),
+  });
 }
 
 export async function listCourses(req, res) {
   const courses = await Course.find()
-    .populate('doctorProfile', 'displayName subject imageUrl slug user')
+    .populate('doctorProfile', 'displayName subject imageUrl imageMedia slug user')
     .sort({ createdAt: -1 })
     .lean();
 
@@ -148,10 +182,13 @@ export async function listCourses(req, res) {
   }, {});
 
   return res.json({
-    courses: courses.map((course) => ({
-      ...course,
-      groups: groupsByCourse[String(course._id)] || [],
-    })),
+    courses: courses.map((course) =>
+      decorateCourse({
+        ...course,
+        groups:
+          groupsByCourse[String(course._id)] || [],
+      }),
+    ),
   });
 }
 
@@ -196,11 +233,13 @@ export async function createCourse(req, res) {
     ip: req.ip,
   });
 
+  const populated = await course.populate(
+    'doctorProfile',
+    'displayName subject imageUrl imageMedia slug user',
+  );
+
   return res.status(201).json({
-    course: await course.populate(
-      'doctorProfile',
-      'displayName subject imageUrl slug user',
-    ),
+    course: decorateCourse(populated.toObject()),
   });
 }
 
@@ -253,11 +292,13 @@ export async function updateCourse(req, res) {
     ip: req.ip,
   });
 
+  const populated = await course.populate(
+    'doctorProfile',
+    'displayName subject imageUrl imageMedia slug user',
+  );
+
   return res.json({
-    course: await course.populate(
-      'doctorProfile',
-      'displayName subject imageUrl slug user',
-    ),
+    course: decorateCourse(populated.toObject()),
   });
 }
 

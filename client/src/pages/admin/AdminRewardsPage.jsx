@@ -2,6 +2,7 @@ import {
   CirclePause,
   CirclePlay,
   Gift,
+  Images,
   PackagePlus,
   Plus,
   TicketCheck,
@@ -9,6 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import MediaImageUploader from '../../components/admin/MediaImageUploader';
 import Modal from '../../components/admin/Modal';
 import StatusPill from '../../components/admin/StatusPill';
 import { api, apiErrorMessage } from '../../services/api';
@@ -28,26 +30,41 @@ const blankReward = {
 
 export default function AdminRewardsPage() {
   const [cards, setCards] = useState([]);
+  const [mediaConfig, setMediaConfig] = useState(null);
   const [assignments, setAssignments] = useState([]);
   const [counts, setCounts] = useState({});
   const [rewardModal, setRewardModal] = useState(false);
   const [restockCard, setRestockCard] = useState(null);
+  const [mediaCard, setMediaCard] = useState(null);
   const [restockQuantity, setRestockQuantity] = useState(10);
   const [form, setForm] = useState(blankReward);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
-    const [overviewResponse, cardsResponse, assignmentsResponse] =
-      await Promise.all([
-        api.get('/admin/rewards/overview'),
-        api.get('/admin/rewards/cards'),
-        api.get('/admin/rewards/assignments'),
-      ]);
+    const [
+      overviewResponse,
+      cardsResponse,
+      assignmentsResponse,
+      mediaResponse,
+    ] = await Promise.all([
+      api.get('/admin/rewards/overview'),
+      api.get('/admin/rewards/cards'),
+      api.get('/admin/rewards/assignments'),
+      api.get('/admin/media/config'),
+    ]);
+
+    const nextCards =
+      cardsResponse.data.rewardCards || [];
 
     setCounts(overviewResponse.data.counts || {});
-    setCards(cardsResponse.data.rewardCards || []);
-    setAssignments(assignmentsResponse.data.assignments || []);
+    setCards(nextCards);
+    setAssignments(
+      assignmentsResponse.data.assignments || [],
+    );
+    setMediaConfig(mediaResponse.data || null);
+
+    return nextCards;
   }, []);
 
   useEffect(() => {
@@ -62,17 +79,31 @@ export default function AdminRewardsPage() {
     setError('');
 
     try {
-      await api.post('/admin/rewards/cards', {
-        ...form,
-        quantity: Number(form.quantity),
-        expiresAt: form.expiresAt
-          ? new Date(`${form.expiresAt}T23:59:59Z`).toISOString()
-          : null,
-      });
+      const { data } = await api.post(
+        '/admin/rewards/cards',
+        {
+          ...form,
+          quantity: Number(form.quantity),
+          expiresAt: form.expiresAt
+            ? new Date(
+                `${form.expiresAt}T23:59:59Z`,
+              ).toISOString()
+            : null,
+        },
+      );
 
       setForm(blankReward);
       setRewardModal(false);
-      await load();
+      const nextCards = await load();
+      const created = nextCards.find(
+        (card) =>
+          card._id === data.rewardCard?._id,
+      );
+      if (mediaConfig?.enabled) {
+        setMediaCard(
+          created || data.rewardCard || null,
+        );
+      }
     } catch (err) {
       setError(apiErrorMessage(err, 'Could not create Bastly Card.'));
     } finally {
@@ -114,6 +145,20 @@ export default function AdminRewardsPage() {
       setError(apiErrorMessage(err, 'Could not add reward stock.'));
     } finally {
       setBusy('');
+    }
+  };
+
+  const refreshMediaCard = async () => {
+    const nextCards = await load();
+
+    if (!mediaCard?._id) return;
+
+    const refreshed = nextCards.find(
+      (card) => card._id === mediaCard._id,
+    );
+
+    if (refreshed) {
+      setMediaCard(refreshed);
     }
   };
 
@@ -244,6 +289,18 @@ export default function AdminRewardsPage() {
                   Restock
                 </button>
 
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMediaCard(card);
+                    setError('');
+                  }}
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line px-3 text-xs font-extrabold text-bastly-navy"
+                >
+                  <Images size={14} />
+                  Media
+                </button>
+
                 {card.status !== 'expired' && (
                   <button
                     type="button"
@@ -357,7 +414,7 @@ export default function AdminRewardsPage() {
               required
             />
             <Field
-              label="Partner logo path / URL"
+              label="Legacy/static partner logo path"
               value={form.partnerLogoUrl}
               onChange={(value) => setForm({ ...form, partnerLogoUrl: value })}
               placeholder="/rewards/coffee-lab.webp"
@@ -444,6 +501,40 @@ export default function AdminRewardsPage() {
             {busy === 'create' ? 'Creating…' : 'Create Bastly Card'}
           </button>
         </form>
+      </Modal>
+
+      <Modal
+        open={Boolean(mediaCard)}
+        title={`Media — ${mediaCard?.title || ''}`}
+        onClose={() => setMediaCard(null)}
+      >
+        <div className="grid gap-4">
+          <MediaImageUploader
+            mediaConfig={mediaConfig}
+            entityType="reward"
+            entityId={mediaCard?._id}
+            slot="partnerLogo"
+            label="Partner logo"
+            description="Transparent PNGs are welcome. Bastly re-encodes the logo as optimized WebP while preserving transparency."
+            currentUrl={mediaCard?.partnerLogoUrl || ''}
+            onChanged={refreshMediaCard}
+          />
+
+          <MediaImageUploader
+            mediaConfig={mediaConfig}
+            entityType="reward"
+            entityId={mediaCard?._id}
+            slot="rewardImage"
+            label="Reward image"
+            description="Use the image students should see on the won Bastly Card. Bastly creates 1600×1000, 960×600, and 320×200 WebP variants."
+            currentUrl={mediaCard?.rewardImageUrl || ''}
+            onChanged={refreshMediaCard}
+          />
+
+          <p className="mb-0 rounded-2xl bg-bastly-blue-pale px-4 py-3 text-xs leading-6 text-muted">
+            The original upload is never sent to Render or stored in MongoDB. The Admin browser creates production WebP variants first, then uploads them directly to Cloudflare R2 using short-lived signed URLs.
+          </p>
+        </div>
       </Modal>
 
       <Modal

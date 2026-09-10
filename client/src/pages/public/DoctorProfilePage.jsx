@@ -59,10 +59,14 @@ export default function DoctorProfilePage() {
     if (!doctor) return null;
 
     const siteUrl = import.meta.env.VITE_SITE_URL;
-    const image = doctor.imageUrl
+    const doctorImage =
+      doctor.imageVariants?.profile ||
+      doctor.imageVariants?.master ||
+      doctor.imageUrl;
+    const image = doctorImage
       ? siteUrl
-        ? new URL(doctor.imageUrl, siteUrl).toString()
-        : doctor.imageUrl
+        ? new URL(doctorImage, siteUrl).toString()
+        : doctorImage
       : undefined;
 
     return {
@@ -115,7 +119,12 @@ export default function DoctorProfilePage() {
           `Learn with ${doctor?.displayName}, ${doctor?.subject} instructor at Bastly Academy. Explore their profile and published courses.`
         }
         canonicalPath={`/doctors/${doctor?.slug || slug}`}
-        image={doctor?.imageUrl || '/brand/icon-512.png'}
+        image={
+          doctor?.imageVariants?.profile ||
+          doctor?.imageVariants?.master ||
+          doctor?.imageUrl ||
+          '/brand/icon-512.png'
+        }
         type="profile"
         schema={schema}
       />
@@ -160,9 +169,12 @@ export default function DoctorProfilePage() {
 
             <div className="mx-auto w-full max-w-[390px]">
               <div className="relative aspect-[4/4.7] overflow-hidden rounded-[34px] border border-white/12 bg-white/8 shadow-[0_30px_100px_rgba(0,0,0,0.28)]">
-                {doctor?.imageUrl ? (
+                {doctor?.imageVariants?.profile || doctor?.imageUrl ? (
                   <img
-                    src={doctor.imageUrl}
+                    src={
+                      doctor.imageVariants?.profile ||
+                      doctor.imageUrl
+                    }
                     alt={doctor.displayName}
                     className="size-full object-cover object-[center_12%]"
                   />

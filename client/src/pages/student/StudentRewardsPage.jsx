@@ -309,7 +309,18 @@ export default function StudentRewardsPage() {
             aria-label="Close reward"
           />
 
-          <div className="relative z-10 w-full max-w-[520px] rounded-[30px] bg-white p-6 text-center shadow-[0_36px_120px_rgba(0,0,0,0.35)] sm:p-8">
+          <div className="relative z-10 w-full max-w-[520px] overflow-hidden rounded-[30px] bg-white text-center shadow-[0_36px_120px_rgba(0,0,0,0.35)]">
+            {winner.rewardSnapshot?.rewardImageUrl && (
+              <div className="aspect-[8/5] overflow-hidden bg-surface">
+                <img
+                  src={winner.rewardSnapshot.rewardImageUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="p-6 sm:p-8">
             <span className="mx-auto mb-5 grid size-16 place-items-center rounded-full bg-bastly-blue-pale text-bastly-blue">
               <Sparkles size={28} />
             </span>
@@ -333,6 +344,7 @@ export default function StudentRewardsPage() {
             >
               See my Bastly Card
             </button>
+            </div>
           </div>
         </div>
       )}
@@ -358,6 +370,17 @@ export default function StudentRewardsPage() {
                   : 'border-line',
               ].join(' ')}
             >
+              {assignment.rewardSnapshot?.rewardImageUrl && (
+                <div className="aspect-[8/5] overflow-hidden bg-surface">
+                  <img
+                    src={assignment.rewardSnapshot.rewardImageUrl}
+                    alt=""
+                    className="size-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+
               <div className="bg-bastly-navy p-5 text-white">
                 <div className="mb-5 flex items-start justify-between gap-4">
                   <span className="grid size-12 place-items-center overflow-hidden rounded-2xl bg-white">

@@ -403,7 +403,11 @@ if (apiUrl) {
         description:
           doctor.bio ||
           `Learn with ${doctor.displayName}, ${doctor.subject} instructor at Bastly Academy. Explore their profile and published courses.`,
-        image: doctor.imageUrl || '/brand/icon-512.png',
+        image:
+          doctor.imageVariants?.profile ||
+          doctor.imageVariants?.master ||
+          doctor.imageUrl ||
+          '/brand/icon-512.png',
         type: 'profile',
         schema: {
           '@context': 'https://schema.org',
@@ -429,6 +433,7 @@ if (apiUrl) {
           course.description ||
           `Study ${course.title} with ${course.doctorProfile?.displayName || 'Bastly Academy'}. View course details and enroll through WhatsApp.`,
         image:
+          course.doctorProfile?.imageVariants?.profile ||
           course.doctorProfile?.imageUrl ||
           '/brand/icon-512.png',
         schema: {

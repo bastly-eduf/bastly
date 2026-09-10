@@ -20,3 +20,14 @@ export const authLimiter = rateLimit({
     error: 'Too many authentication attempts. Please wait and try again.',
   },
 });
+
+
+export const mediaUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 60,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: {
+    error: 'Too many media upload requests. Please wait and try again.',
+  },
+});

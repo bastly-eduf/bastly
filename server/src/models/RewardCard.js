@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import { mediaAssetSchema } from './schemas/mediaAsset.schema.js';
+
 const rewardCardSchema = new mongoose.Schema(
   {
     partnerName: {
@@ -14,6 +16,14 @@ const rewardCardSchema = new mongoose.Schema(
       trim: true,
       maxlength: 1000,
       default: '',
+    },
+    partnerLogoMedia: {
+      type: mediaAssetSchema,
+      default: null,
+    },
+    rewardImageMedia: {
+      type: mediaAssetSchema,
+      default: null,
     },
     title: {
       type: String,

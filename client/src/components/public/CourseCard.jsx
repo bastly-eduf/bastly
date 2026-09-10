@@ -11,9 +11,13 @@ export default function CourseCard({ course }) {
   return (
     <article className="group overflow-hidden rounded-[26px] border border-line bg-white shadow-soft transition duration-300 hover:-translate-y-1 hover:border-bastly-blue/25 hover:shadow-card">
       <div className="relative aspect-[4/2.75] overflow-hidden bg-[#061f49]">
-        {course.doctorProfile?.imageUrl ? (
+        {course.doctorProfile?.imageVariants?.card ||
+        course.doctorProfile?.imageUrl ? (
           <img
-            src={course.doctorProfile.imageUrl}
+            src={
+              course.doctorProfile.imageVariants?.card ||
+              course.doctorProfile.imageUrl
+            }
             alt=""
             loading="lazy"
             decoding="async"

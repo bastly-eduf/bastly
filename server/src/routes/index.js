@@ -8,6 +8,7 @@ import doctorRoutes from './doctor.routes.js';
 import doctorAttendanceRoutes from './doctorAttendance.routes.js';
 import healthRoutes from './health.routes.js';
 import invitationRoutes from './invitation.routes.js';
+import mediaAdminRoutes from './mediaAdmin.routes.js';
 import notificationRoutes from './notification.routes.js';
 import publicRoutes from './public.routes.js';
 import recoveryRoutes from './recovery.routes.js';
@@ -31,6 +32,7 @@ router.use('/public', publicRoutes);
 router.use('/admin', adminRoutes);
 router.use('/admin/academic', academicAdminRoutes);
 router.use('/admin/rewards', rewardAdminRoutes);
+router.use('/admin/media', mediaAdminRoutes);
 
 router.use('/doctor', doctorRoutes);
 router.use('/doctor', doctorAttendanceRoutes);

@@ -2,6 +2,7 @@ import Course from '../models/Course.js';
 import DoctorProfile from '../models/DoctorProfile.js';
 import Group from '../models/Group.js';
 import { HttpError } from '../utils/httpError.js';
+import { doctorMediaPresentation } from '../services/media.service.js';
 
 function setPublicCache(res) {
   res.set(
@@ -11,6 +12,8 @@ function setPublicCache(res) {
 }
 
 function publicDoctor(profile, courseCount = 0) {
+  const media = doctorMediaPresentation(profile);
+
   return {
     _id: profile._id,
     displayName: profile.displayName,
@@ -20,7 +23,8 @@ function publicDoctor(profile, courseCount = 0) {
     bio: profile.bio || '',
     qualifications: profile.qualifications || [],
     experience: profile.experience || [],
-    imageUrl: profile.imageUrl || '',
+    imageUrl: media.imageUrl,
+    imageVariants: media.imageVariants,
     isFeatured: Boolean(profile.isFeatured),
     courseCount,
   };
@@ -59,7 +63,7 @@ export async function listPublicDoctors(req, res) {
     isPublished: true,
   })
     .select(
-      'displayName slug subject levels bio qualifications experience imageUrl isFeatured sortOrder',
+      'displayName slug subject levels bio qualifications experience imageUrl imageMedia isFeatured sortOrder',
     )
     .sort({
       isFeatured: -1,
@@ -129,7 +133,7 @@ export async function getPublicDoctor(req, res) {
     isPublished: true,
   })
     .select(
-      'displayName slug subject levels bio qualifications experience imageUrl isFeatured sortOrder',
+      'displayName slug subject levels bio qualifications experience imageUrl imageMedia isFeatured sortOrder',
     )
     .lean();
 
@@ -181,7 +185,7 @@ export async function listPublicCourses(req, res) {
         isPublished: true,
       },
       select:
-        'displayName slug subject levels bio qualifications experience imageUrl isFeatured',
+        'displayName slug subject levels bio qualifications experience imageUrl imageMedia isFeatured',
     })
     .sort({
       featured: -1,
@@ -240,7 +244,7 @@ export async function getPublicCourse(req, res) {
         isPublished: true,
       },
       select:
-        'displayName slug subject levels bio qualifications experience imageUrl isFeatured',
+        'displayName slug subject levels bio qualifications experience imageUrl imageMedia isFeatured',
     })
     .lean();
 

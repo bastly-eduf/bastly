@@ -2,8 +2,25 @@ import RewardAssignment from '../models/RewardAssignment.js';
 import RewardCard from '../models/RewardCard.js';
 import SpinCredit from '../models/SpinCredit.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import { rewardMediaPresentation } from '../services/media.service.js';
 import { expireRewardRecords } from '../services/reward.service.js';
 import { HttpError } from '../utils/httpError.js';
+
+
+function decorateRewardCard(card) {
+  if (!card) return card;
+
+  const plain =
+    typeof card.toObject === 'function'
+      ? card.toObject()
+      : card;
+
+  return {
+    ...plain,
+    legacyPartnerLogoUrl: plain.partnerLogoUrl || '',
+    ...rewardMediaPresentation(plain),
+  };
+}
 
 export async function rewardOverview(req, res) {
   await expireRewardRecords();
@@ -81,7 +98,7 @@ export async function listRewardCards(req, res) {
 
   return res.json({
     rewardCards: cards.map((card) => ({
-      ...card,
+      ...decorateRewardCard(card),
       stats: statsMap.get(String(card._id)) || {
         assigned: 0,
         redeemed: 0,
@@ -126,7 +143,9 @@ export async function createRewardCard(req, res) {
     ip: req.ip,
   });
 
-  return res.status(201).json({ rewardCard });
+  return res.status(201).json({
+    rewardCard: decorateRewardCard(rewardCard),
+  });
 }
 
 export async function updateRewardCard(req, res) {
@@ -186,7 +205,9 @@ export async function updateRewardCard(req, res) {
     ip: req.ip,
   });
 
-  return res.json({ rewardCard });
+  return res.json({
+    rewardCard: decorateRewardCard(rewardCard),
+  });
 }
 
 export async function restockRewardCard(req, res) {
@@ -221,7 +242,9 @@ export async function restockRewardCard(req, res) {
     ip: req.ip,
   });
 
-  return res.json({ rewardCard });
+  return res.json({
+    rewardCard: decorateRewardCard(rewardCard),
+  });
 }
 
 export async function listRewardAssignments(req, res) {

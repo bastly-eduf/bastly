@@ -4,6 +4,9 @@ const rewardSnapshotSchema = new mongoose.Schema(
   {
     partnerName: { type: String, required: true },
     partnerLogoUrl: { type: String, default: '' },
+    partnerLogoKey: { type: String, default: '' },
+    rewardImageUrl: { type: String, default: '' },
+    rewardImageKey: { type: String, default: '' },
     title: { type: String, required: true },
     offer: { type: String, required: true },
     description: { type: String, default: '' },
