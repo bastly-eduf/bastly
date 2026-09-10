@@ -1,8 +1,13 @@
 import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
+import DoctorProfile from '../models/DoctorProfile.js';
 import Group from '../models/Group.js';
 import User from '../models/User.js';
 import { HttpError } from '../utils/httpError.js';
+import {
+  createNotification,
+  notifyParentsOfStudent,
+} from './notification.service.js';
 
 export async function validateEnrollmentReferences({
   studentId,
@@ -124,6 +129,60 @@ export async function activateEnrollment({
   });
 
   await enrollment.save();
+
+  const doctorProfile = course.doctorProfile
+    ? await DoctorProfile.findById(course.doctorProfile)
+        .select('user displayName')
+        .lean()
+    : null;
+
+  const notificationTasks = [
+    createNotification({
+      recipient: enrollment.student,
+      category: 'access',
+      type: 'course_access_activated',
+      title: 'Course access unlocked',
+      message: `Your access to ${course.title} is now active.`,
+      href: `/student/courses/${course._id}`,
+      metadata: {
+        courseId: String(course._id),
+        enrollmentId: String(enrollment._id),
+      },
+      dedupeKey: `course-access:${enrollment._id}:${enrollment.paidAt?.toISOString() || 'paid'}`,
+    }),
+    notifyParentsOfStudent(enrollment.student, {
+      category: 'access',
+      type: 'child_course_access_activated',
+      title: 'Course access confirmed',
+      message: `A course payment was confirmed and access to ${course.title} is now active.`,
+      href: `/parent/children/${enrollment.student}/courses/${course._id}`,
+      metadata: {
+        studentId: String(enrollment.student),
+        courseId: String(course._id),
+      },
+      dedupeKey: `parent-course-access:${enrollment._id}:${enrollment.paidAt?.toISOString() || 'paid'}`,
+    }),
+  ];
+
+  if (doctorProfile?.user) {
+    notificationTasks.push(
+      createNotification({
+        recipient: doctorProfile.user,
+        category: 'access',
+        type: 'student_enrolled',
+        title: 'Student joined your course',
+        message: `A student now has active access to ${course.title}.`,
+        href: '/doctor/students',
+        metadata: {
+          studentId: String(enrollment.student),
+          courseId: String(course._id),
+        },
+        dedupeKey: `doctor-enrollment:${enrollment._id}:${enrollment.paidAt?.toISOString() || 'paid'}`,
+      }),
+    );
+  }
+
+  Promise.allSettled(notificationTasks).catch(() => {});
 
   return enrollment.populate([
     { path: 'student', select: 'fullName email phone role status' },

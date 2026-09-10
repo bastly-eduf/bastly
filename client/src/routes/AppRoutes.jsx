@@ -22,6 +22,8 @@ import DoctorOverviewPage from '../pages/doctor/DoctorOverviewPage';
 import DoctorPerformancePage from '../pages/doctor/DoctorPerformancePage';
 import DoctorStudentsPage from '../pages/doctor/DoctorStudentsPage';
 
+import ParentChildPage from '../pages/parent/ParentChildPage';
+import ParentCoursePage from '../pages/parent/ParentCoursePage';
 import ParentOverviewPage from '../pages/parent/ParentOverviewPage';
 
 import CheckEmailPage from '../pages/public/CheckEmailPage';
@@ -84,6 +86,11 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute roles={['parent']} />}>
         <Route path="/parent" element={<ParentLayout />}>
           <Route index element={<ParentOverviewPage />} />
+          <Route path="children/:studentId" element={<ParentChildPage />} />
+          <Route
+            path="children/:studentId/courses/:courseId"
+            element={<ParentCoursePage />}
+          />
         </Route>
       </Route>
 

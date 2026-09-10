@@ -7,6 +7,7 @@ import doctorRoutes from './doctor.routes.js';
 import doctorAttendanceRoutes from './doctorAttendance.routes.js';
 import healthRoutes from './health.routes.js';
 import invitationRoutes from './invitation.routes.js';
+import notificationRoutes from './notification.routes.js';
 import recoveryRoutes from './recovery.routes.js';
 import rewardAdminRoutes from './rewardAdmin.routes.js';
 import studentRoutes from './student.routes.js';
@@ -22,6 +23,7 @@ const router = Router();
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/invitations', invitationRoutes);
+router.use('/notifications', notificationRoutes);
 
 router.use('/admin', adminRoutes);
 router.use('/admin/academic', academicAdminRoutes);

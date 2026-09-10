@@ -4,6 +4,7 @@ import Enrollment from '../models/Enrollment.js';
 import RewardAssignment from '../models/RewardAssignment.js';
 import RewardCard from '../models/RewardCard.js';
 import SpinCredit from '../models/SpinCredit.js';
+import { createNotification } from './notification.service.js';
 import { HttpError } from '../utils/httpError.js';
 import { endOfWeekUtc, startOfWeekUtc } from '../utils/week.js';
 
@@ -198,6 +199,21 @@ export async function syncStudentSpinCredits(studentId) {
               courseIds: courseIdsForWeek,
             },
             earnedAt: now,
+          });
+
+          createNotification({
+            recipient: studentId,
+            category: 'reward',
+            type: 'spin_earned',
+            title: 'You earned a Bastly Spin ✨',
+            message: 'Every required quiz for the week earned Star. Your Spin is ready.',
+            href: '/student/rewards',
+            metadata: {
+              weekStart: weekStart.toISOString(),
+            },
+            dedupeKey: `spin-earned:${weekStart.toISOString()}`,
+          }).catch((error) => {
+            console.error('Spin notification failed:', error.message);
           });
         } catch (error) {
           if (error?.code !== 11000) throw error;

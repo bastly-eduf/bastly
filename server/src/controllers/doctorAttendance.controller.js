@@ -4,6 +4,10 @@ import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
 import Group from '../models/Group.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import {
+  createNotification,
+  notifyParentsOfStudent,
+} from '../services/notification.service.js';
 import { getDoctorProfileForUser, getOwnedCourse } from '../services/doctorAccess.service.js';
 import { HttpError } from '../utils/httpError.js';
 import { endOfWeekUtc, parseWeekStart } from '../utils/week.js';
@@ -177,6 +181,52 @@ export async function finalizeAttendance(req, res) {
   session.status = 'finalized';
   session.finalizedAt = new Date();
   await session.save();
+
+  const absentRecords = await AttendanceRecord.find({
+    session: session._id,
+    status: 'absent',
+  })
+    .populate('student', 'fullName')
+    .lean();
+
+  const course = await Course.findById(session.course)
+    .select('title')
+    .lean();
+
+  for (const record of absentRecords) {
+    if (!record.student) continue;
+
+    const heldDate = new Date(session.heldAt).toLocaleDateString('en-GB');
+
+    Promise.allSettled([
+      createNotification({
+        recipient: record.student._id,
+        category: 'attendance',
+        type: 'attendance_absence',
+        title: 'Attendance marked absent',
+        message: `You were marked absent from ${course?.title || 'your course'} on ${heldDate}.`,
+        href: '/student/performance',
+        metadata: {
+          sessionId: String(session._id),
+          courseId: String(session.course),
+        },
+        dedupeKey: `absence:${session._id}:${record.student._id}`,
+      }),
+      notifyParentsOfStudent(record.student._id, {
+        category: 'attendance',
+        type: 'child_attendance_absence',
+        title: 'Attendance update',
+        message: `${record.student.fullName} was marked absent from ${course?.title || 'a Bastly course'} on ${heldDate}.`,
+        href: `/parent/children/${record.student._id}/courses/${session.course}`,
+        metadata: {
+          studentId: String(record.student._id),
+          sessionId: String(session._id),
+          courseId: String(session.course),
+        },
+        dedupeKey: `parent-absence:${session._id}:${record.student._id}`,
+      }),
+    ]).catch(() => {});
+  }
 
   await writeAuditLog({
     actor: req.user._id,

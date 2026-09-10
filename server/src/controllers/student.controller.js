@@ -11,6 +11,11 @@ import {
 import { getStudentAssessmentAccess } from '../services/studentAccess.service.js';
 import { writeAuditLog } from '../services/audit.service.js';
 import { syncStudentSpinCredits } from '../services/reward.service.js';
+import DoctorProfile from '../models/DoctorProfile.js';
+import {
+  createNotification,
+  notifyParentsOfStudent,
+} from '../services/notification.service.js';
 import { HttpError } from '../utils/httpError.js';
 
 export async function studentOverview(req, res) {
@@ -176,6 +181,75 @@ export async function submitStudentAssessment(req, res) {
       console.error('Spin credit sync after quiz failed:', error.message);
     }
   }
+
+  const assessmentCourse = await Course.findById(
+    assessment.course,
+  )
+    .select('doctorProfile')
+    .lean();
+
+  const courseDoctor = assessmentCourse?.doctorProfile
+    ? await DoctorProfile.findById(
+        assessmentCourse.doctorProfile,
+      )
+        .select('user')
+        .lean()
+    : null;
+
+  const resultMessage = `${assessment.title}: ${Math.round(attempt.percentage)}% (${attempt.gradeBand}).`;
+
+  const notificationTasks = [
+    createNotification({
+      recipient: req.user._id,
+      category: 'academic',
+      type: 'assessment_result',
+      title: assessment.type === 'quiz' ? 'Quiz result ready' : 'Homework attempt graded',
+      message: resultMessage,
+      href: `/student/assessments/${assessment._id}`,
+      metadata: {
+        assessmentId: String(assessment._id),
+        attemptId: String(attempt._id),
+      },
+      dedupeKey: `assessment-result:${attempt._id}`,
+    }),
+  ];
+
+  if (courseDoctor?.user) {
+    notificationTasks.push(
+      createNotification({
+        recipient: courseDoctor.user,
+        category: 'academic',
+        type: 'student_assessment_submitted',
+        title: `${assessment.type === 'quiz' ? 'Quiz' : 'Homework'} submitted`,
+        message: `${req.user.fullName} scored ${Math.round(attempt.percentage)}% on ${assessment.title}.`,
+        href: `/doctor/courses/${assessment.course}/assessments`,
+        metadata: {
+          studentId: String(req.user._id),
+          assessmentId: String(assessment._id),
+        },
+        dedupeKey: `doctor-assessment:${attempt._id}`,
+      }),
+    );
+  }
+
+  if (assessment.type === 'quiz') {
+    notificationTasks.push(
+      notifyParentsOfStudent(req.user._id, {
+        category: 'academic',
+        type: 'child_quiz_result',
+        title: 'Quiz result posted',
+        message: `${req.user.fullName} scored ${Math.round(attempt.percentage)}% (${attempt.gradeBand}) on ${assessment.title}.`,
+        href: `/parent/children/${req.user._id}`,
+        metadata: {
+          studentId: String(req.user._id),
+          assessmentId: String(assessment._id),
+        },
+        dedupeKey: `parent-quiz:${attempt._id}`,
+      }),
+    );
+  }
+
+  Promise.allSettled(notificationTasks).catch(() => {});
 
   await writeAuditLog({
     actor: req.user._id,

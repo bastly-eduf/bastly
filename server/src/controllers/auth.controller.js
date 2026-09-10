@@ -14,6 +14,7 @@ import { HttpError } from '../utils/httpError.js';
 import { sanitizeUser } from '../utils/sanitizeUser.js';
 import { createStudentCode } from '../utils/studentCode.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import { notifyRole } from '../services/notification.service.js';
 import {
   createParentInvitation,
   createStudentVerification,
@@ -73,6 +74,20 @@ export async function registerStudent(req, res) {
       targetType: 'User',
       targetId: user._id,
       ip: req.ip,
+    });
+
+    notifyRole('admin', {
+      category: 'system',
+      type: 'student_registered',
+      title: 'New student account',
+      message: `${user.fullName} created a Bastly student account.`,
+      href: '/admin/enrollments',
+      metadata: {
+        studentId: String(user._id),
+      },
+      dedupeKey: `student-registered:${user._id}`,
+    }).catch((error) => {
+      console.error('Admin signup notification failed:', error.message);
     });
 
     let emailNotice = 'none';

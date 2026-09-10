@@ -11,6 +11,7 @@ import {
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
+import NotificationBell from '../components/notifications/NotificationBell';
 import { useAuth } from '../context/AuthContext';
 
 const links = [
@@ -131,8 +132,11 @@ export default function StudentLayout() {
             <Menu size={19} />
           </button>
 
-          <div className="ml-auto rounded-full bg-bastly-blue-pale px-3 py-1.5 text-xs font-extrabold text-bastly-blue-dark">
-            Student
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationBell />
+            <div className="rounded-full bg-bastly-blue-pale px-3 py-1.5 text-xs font-extrabold text-bastly-blue-dark">
+              Student
+            </div>
           </div>
         </header>
 

@@ -547,3 +547,81 @@ Step 6B:
 - deeper Parent child/course detail pages
 - attendance + quiz/homework drill-down for parents
 - notifications foundation for Student / Parent / Doctor / Admin
+
+
+## Step 6B — Parent drill-down + in-app notifications
+
+### Parent experience
+
+Parent accounts now have three levels:
+
+```text
+/parent
+  └── /parent/children/:studentId
+        └── /parent/children/:studentId/courses/:courseId
+```
+
+The child page combines:
+
+- active paid courses
+- weekly performance
+- overall attendance summary
+- Quiz first-attempt average
+- Homework first-attempt average
+- Homework best-attempt improvement
+- published lesson completion
+
+The course detail page shows a selected performance week with:
+
+- the 50/30/20 normalized Weekly Performance card
+- Quiz/Homework first, latest, and best attempts
+- finalized attendance session history
+- learning progress for published lessons
+
+Every Parent API request verifies an ACTIVE ParentRelationship before exposing child data.
+
+### Notifications foundation
+
+Added one shared in-app Notification system for:
+
+- Student
+- Parent
+- Doctor
+- Admin
+
+Every private role layout now has a notification bell with:
+
+- unread badge
+- dropdown feed
+- mark one as read
+- mark all as read
+- direct navigation to the related Bastly screen
+- 180-day TTL retention
+
+Initial high-value events wired in:
+
+- Admin: new Student account
+- Student: course access confirmed
+- Doctor: Student gets active course access
+- Parent: child's course access confirmed
+- Student: assessment result
+- Doctor: Student submits Quiz/Homework
+- Parent: child's Quiz result
+- Student + Parent: finalized absence
+- Student: Bastly Spin earned
+
+Notifications are intentionally in-app rather than weekly email spam. Gmail remains for important
+transactional/security/account flows.
+
+### Next
+
+Step 6C should replace the public placeholder routes with real dynamic content:
+
+- `/doctors`
+- `/doctors/:slug`
+- `/courses`
+- `/courses/:slug`
+- WhatsApp enroll CTA using Bastly's number and course-specific message
+- real SEO metadata / structured public data foundation
+
+Then continue to PWA + production hardening and final launch QA.
