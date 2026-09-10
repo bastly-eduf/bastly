@@ -26,17 +26,19 @@ import ParentChildPage from '../pages/parent/ParentChildPage';
 import ParentCoursePage from '../pages/parent/ParentCoursePage';
 import ParentOverviewPage from '../pages/parent/ParentOverviewPage';
 
+import AboutPage from '../pages/public/AboutPage';
 import CheckEmailPage from '../pages/public/CheckEmailPage';
+import ContactPage from '../pages/public/ContactPage';
 import CoursePage from '../pages/public/CoursePage';
 import CoursesPage from '../pages/public/CoursesPage';
 import DoctorProfilePage from '../pages/public/DoctorProfilePage';
 import DoctorsPage from '../pages/public/DoctorsPage';
+import FaqPage from '../pages/public/FaqPage';
 import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
 import HomePage from '../pages/public/HomePage';
 import InvitationPage from '../pages/public/InvitationPage';
 import LoginPage from '../pages/public/LoginPage';
 import NotFoundPage from '../pages/public/NotFoundPage';
-import PlaceholderPage from '../pages/public/PlaceholderPage';
 import RegisterPage from '../pages/public/RegisterPage';
 import ResetPasswordPage from '../pages/public/ResetPasswordPage';
 import VerifyEmailPage from '../pages/public/VerifyEmailPage';
@@ -58,9 +60,9 @@ export default function AppRoutes() {
         <Route path="/courses/:slug" element={<CoursePage />} />
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/doctors/:slug" element={<DoctorProfilePage />} />
-        <Route path="/about" element={<PlaceholderPage title="About Bastly" />} />
-        <Route path="/faq" element={<PlaceholderPage title="FAQ" />} />
-        <Route path="/contact" element={<PlaceholderPage title="Contact" />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Route>
 
       <Route element={<PublicOnlyRoute />}>

@@ -16,6 +16,10 @@ function upsertMeta(selector, attribute, key, content) {
   element.setAttribute('content', content);
 }
 
+function removeMeta(selector) {
+  document.head.querySelector(selector)?.remove();
+}
+
 function upsertNamedMeta(name, content) {
   upsertMeta(
     `meta[name="${name}"]`,
@@ -112,20 +116,30 @@ export default function Seo({
     upsertPropertyMeta('og:description', description);
     upsertPropertyMeta('og:type', type);
 
-    upsertNamedMeta('twitter:card', 'summary_large_image');
+    upsertNamedMeta(
+      'twitter:card',
+      'summary_large_image',
+    );
     upsertNamedMeta('twitter:title', title);
-    upsertNamedMeta('twitter:description', description);
+    upsertNamedMeta(
+      'twitter:description',
+      description,
+    );
 
     if (canonicalUrl) {
       upsertCanonical(canonicalUrl);
       upsertPropertyMeta('og:url', canonicalUrl);
     } else {
       removeCanonical();
+      removeMeta('meta[property="og:url"]');
     }
 
     if (imageUrl) {
       upsertPropertyMeta('og:image', imageUrl);
       upsertNamedMeta('twitter:image', imageUrl);
+    } else {
+      removeMeta('meta[property="og:image"]');
+      removeMeta('meta[name="twitter:image"]');
     }
 
     updateStructuredData(schema);

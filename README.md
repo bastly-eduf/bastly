@@ -775,3 +775,131 @@ Step 6D:
 - public-route prerender + sitemap/robots
 - production security/deployment hardening
 - final launch QA
+
+
+## Step 6D — Public completion + PWA + SEO build output + security hardening
+
+### Public pages completed
+
+The old placeholders are replaced by real pages:
+
+```text
+/about
+/faq
+/contact
+```
+
+`/about` explains the Bastly product honestly from the four role perspectives.
+
+`/faq` uses one shared FAQ dataset with the homepage FAQ and documents:
+
+- WhatsApp enrollment
+- payment/access activation
+- course end dates
+- Quiz one-attempt rule
+- Homework unlimited attempts
+- first Homework attempt in Weekly Performance
+- 50/30/20 Weekly Performance with missing-category normalization
+- finalized Present/Absent attendance
+- Parent visibility
+- YouTube Unlisted limitations
+- Bastly Spin eligibility
+- Bastly Cards
+
+`/contact` uses Bastly's real contact channels:
+
+- WhatsApp / phone: `01000883609`
+- Instagram: `@bastly.eduf`
+
+No public contact form was added, which avoids creating a spam-prone endpoint when the
+academy already handles enrollment/support through WhatsApp.
+
+### PWA foundation
+
+The existing manifest is upgraded and Bastly now includes:
+
+- installable manifest
+- home-screen shortcuts
+- production service-worker registration
+- static asset caching
+- dedicated offline page
+- install prompt for compatible browsers
+- iOS Add to Home Screen guidance
+
+Important security behavior:
+
+- API responses are never cached by the service worker.
+- navigation HTML is network-first
+- private account pages are never intentionally served from a cached HTML shell while offline
+- videos/assessment/account data still require connectivity
+
+Test installability using a production build / preview rather than normal Vite dev mode.
+
+### Build-time SEO output
+
+`npm run build` now runs:
+
+```text
+vite build
+node scripts/generate-static-seo.mjs
+```
+
+The SEO generator creates:
+
+- route-specific static HTML **head shells** for public routes
+- dynamic Doctor/Course head shells when the public API is reachable during the build
+- `robots.txt`
+- `sitemap.xml`
+- canonical URLs
+- Open Graph / Twitter metadata
+- JSON-LD where available
+
+If `VITE_SITE_URL` is absent or points to localhost, the generated build is intentionally
+`noindex` and `robots.txt` disallows crawling. This prevents an accidental preview/dev build
+from advertising localhost canonicals.
+
+When the production domain is known, set:
+
+```text
+VITE_SITE_URL=https://your-canonical-domain.com
+VITE_API_URL=https://your-render-api-domain.com/api
+```
+
+before the production build.
+
+The generator can then include published Doctor and Course slugs in `sitemap.xml`.
+
+This is intentionally an SEO **HTML-head prerender layer**, not fake full SSR. The final launch
+SEO pass should verify the actual hosting behavior for `/route/index.html` and decide whether
+to keep this static-shell approach or add full body prerender/SSR after the production domain
+and hosting topology are locked.
+
+### Security hardening
+
+Production now:
+
+- rejects state-changing API calls that omit `Origin`
+- rejects state-changing API calls from any origin except `CLIENT_URL`
+- keeps local Postman/curl testing possible in development
+- applies `private, no-store` caching headers to Auth/Admin/Doctor/Student/Parent/Account/Notification APIs
+- validates `CLIENT_URL`
+- rejects short/default JWT secrets in production
+- marks the auth cookie `HttpOnly`, `Secure` in production, `SameSite=Lax`, and high priority
+
+Public API caching remains explicit on the public controllers.
+
+### Next
+
+Step 7 should be launch-focused rather than another large product feature:
+
+1. Account/settings polish and remaining edge-case QA
+2. Deploy frontend + API to the intended hosts
+3. Configure canonical domain / API subdomain
+4. Gmail production configuration + email verification
+5. MongoDB production account/cluster ownership
+6. Verify secure cookies/CORS/Origin on the real domains
+7. Verify sitemap/robots/direct-route SEO shells on the real host
+8. Decide full prerender/SSR based on the deployed routing behavior
+9. PWA install/offline checks
+10. performance/accessibility/mobile QA
+11. Search Console + production launch checklist

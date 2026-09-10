@@ -31,7 +31,8 @@ export function verifyAuthToken(token) {
 export function authCookieOptions() {
   return {
     httpOnly: true,
-    secure: env.nodeEnv === 'production',
+    priority: 'high',
+    secure: env.isProduction,
     sameSite: 'lax',
     path: '/',
     maxAge: COOKIE_MAX_AGE,
@@ -41,7 +42,8 @@ export function authCookieOptions() {
 export function clearAuthCookieOptions() {
   return {
     httpOnly: true,
-    secure: env.nodeEnv === 'production',
+    priority: 'high',
+    secure: env.isProduction,
     sameSite: 'lax',
     path: '/',
   };
