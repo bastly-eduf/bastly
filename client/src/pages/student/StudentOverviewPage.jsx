@@ -22,7 +22,7 @@ export default function StudentOverviewPage() {
       </div>
 
       <section className="mt-6 rounded-[26px] border border-line bg-white p-5 shadow-soft sm:p-6">
-        <div className="mb-5 flex items-center justify-between gap-4"><div><p className="mb-1 text-[0.68rem] font-extrabold uppercase tracking-[0.08em] text-bastly-blue">My courses</p><h2 className="mb-0 font-heading text-2xl font-bold text-bastly-navy">Active access</h2></div><Link to="/student/assessments" className="text-sm font-extrabold text-bastly-blue-dark no-underline">Quizzes & homework →</Link></div>
+        <div className="mb-5 flex items-center justify-between gap-4"><div><p className="mb-1 text-[0.68rem] font-extrabold uppercase tracking-[0.08em] text-bastly-blue">My courses</p><h2 className="mb-0 font-heading text-2xl font-bold text-bastly-navy">Active access</h2></div><Link to="/student/courses" className="text-sm font-extrabold text-bastly-blue-dark no-underline">Open my courses →</Link></div>
         <div className="grid gap-3 md:grid-cols-2">
           {(data?.activeCourses || []).map((e) => <div key={e._id} className="rounded-2xl border border-line bg-surface p-4"><p className="mb-1 font-heading font-bold text-bastly-navy">{e.course?.title}</p><p className="mb-1 text-xs text-muted">{e.course?.doctorProfile?.displayName}</p><p className="mb-0 text-[0.68rem] text-muted">{e.group?.name}{e.group?.scheduleLabel ? ` · ${e.group.scheduleLabel}` : ''}</p></div>)}
           {data && !data.activeCourses?.length && <p className="mb-0 text-sm text-muted">You do not have an active paid course yet.</p>}

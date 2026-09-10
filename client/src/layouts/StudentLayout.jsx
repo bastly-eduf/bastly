@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   ClipboardCheck,
   Gift,
   LayoutDashboard,
@@ -14,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 
 const links = [
   ['Overview', '/student', LayoutDashboard, true],
+  ['My Courses', '/student/courses', BookOpen, false],
   ['Quizzes & Homework', '/student/assessments', ClipboardCheck, false],
   ['Performance', '/student/performance', TrendingUp, false],
   ['Bastly Rewards', '/student/rewards', Gift, false],
@@ -40,11 +42,19 @@ export default function StudentLayout() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center overflow-hidden rounded-2xl bg-white">
-              <img src="/brand/bastly-logo.webp" alt="Bastly Academy" className="size-full object-contain" />
+              <img
+                src="/brand/bastly-logo.webp"
+                alt="Bastly Academy"
+                className="size-full object-contain"
+              />
             </span>
             <div>
-              <p className="mb-0 font-heading text-sm font-bold">Bastly</p>
-              <p className="mb-0 text-[0.68rem] text-white/45">Student space</p>
+              <p className="mb-0 font-heading text-sm font-bold">
+                Bastly
+              </p>
+              <p className="mb-0 text-[0.68rem] text-white/45">
+                Student space
+              </p>
             </div>
           </div>
 

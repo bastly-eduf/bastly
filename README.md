@@ -479,3 +479,71 @@ Step 6 should begin the remaining full-platform experience rather than another i
 - notifications foundation
 - public dynamic Doctors + Courses pages
 - then PWA / SEO / launch hardening
+
+
+## Step 6A — Student learning area
+
+Added the real protected learning experience.
+
+### Student routes
+
+```text
+/student/courses
+/student/courses/:courseId
+```
+
+Students now get:
+
+- active paid courses only
+- course/group information
+- published modules only
+- published lessons only
+- responsive course outline
+- protected YouTube lesson playback
+- lesson resources
+- manual Mark Complete / Completed control
+- course progress percentage
+- next unfinished lesson behavior
+
+### Security
+
+Course and lesson APIs validate the student's active paid Enrollment and `accessEndDate`
+on every protected request.
+
+The general course workspace does **not** return YouTube video IDs or embed URLs.
+Those are returned only when the student opens a specific published lesson after
+the server verifies access.
+
+Draft/archived modules and lessons never enter the Student API.
+
+If Admin unregisters the Enrollment or its access expires, the student immediately
+loses the ability to fetch that course/lesson even if they know an old URL.
+
+### Lesson progress
+
+Added `LessonProgress`:
+
+```text
+Student + Lesson → completed / completedAt
+```
+
+Progress is intentionally separate from academic performance.
+
+It does **not** change:
+
+- Quiz score
+- Homework score
+- Attendance
+- Weekly Performance
+- Bastly Spin eligibility
+
+There is no continuous video tracking in V1. The student deliberately marks a
+lesson complete, which keeps the system lightweight and avoids fake precision.
+
+### Next
+
+Step 6B:
+
+- deeper Parent child/course detail pages
+- attendance + quiz/homework drill-down for parents
+- notifications foundation for Student / Parent / Doctor / Admin

@@ -10,6 +10,7 @@ import invitationRoutes from './invitation.routes.js';
 import recoveryRoutes from './recovery.routes.js';
 import rewardAdminRoutes from './rewardAdmin.routes.js';
 import studentRoutes from './student.routes.js';
+import studentLearningRoutes from './studentLearning.routes.js';
 import studentRewardRoutes from './studentReward.routes.js';
 import {
   parentRouter,
@@ -32,6 +33,7 @@ router.use('/doctor', doctorAssessmentRoutes);
 
 router.use('/student', studentRoutes);
 router.use('/student', studentPerformanceRouter);
+router.use('/student', studentLearningRoutes);
 router.use('/student/rewards', studentRewardRoutes);
 
 router.use('/parent', parentRouter);

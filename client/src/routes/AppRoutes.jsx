@@ -36,6 +36,8 @@ import ResetPasswordPage from '../pages/public/ResetPasswordPage';
 import VerifyEmailPage from '../pages/public/VerifyEmailPage';
 
 import StudentAssessmentPage from '../pages/student/StudentAssessmentPage';
+import StudentCoursePage from '../pages/student/StudentCoursePage';
+import StudentCoursesPage from '../pages/student/StudentCoursesPage';
 import StudentAssessmentsPage from '../pages/student/StudentAssessmentsPage';
 import StudentOverviewPage from '../pages/student/StudentOverviewPage';
 import StudentPerformancePage from '../pages/student/StudentPerformancePage';
@@ -70,6 +72,8 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute roles={['student']} />}>
         <Route path="/student" element={<StudentLayout />}>
           <Route index element={<StudentOverviewPage />} />
+          <Route path="courses" element={<StudentCoursesPage />} />
+          <Route path="courses/:courseId" element={<StudentCoursePage />} />
           <Route path="assessments" element={<StudentAssessmentsPage />} />
           <Route path="assessments/:assessmentId" element={<StudentAssessmentPage />} />
           <Route path="performance" element={<StudentPerformancePage />} />
