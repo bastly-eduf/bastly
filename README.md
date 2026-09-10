@@ -1277,3 +1277,15 @@ tokens.
 Validation details are never copied onto a 500 response.
 
 See `SECURITY.md` for the current security model and the remaining pre-launch checks.
+
+## Step 7E — environment contract
+
+Production environment ownership and validation are documented in `ENVIRONMENT.md`.
+
+Important changes:
+
+- Render generates `JWT_SECRET` via the Blueprint.
+- Owner/private Mongo, Gmail, and Cloudflare R2 values stay server-only.
+- Public WhatsApp/phone/Instagram values are centralized as Vite build variables.
+- Production Vercel builds reject direct-to-Render browser API configuration and known secret-shaped `VITE_` variables.
+- New courses no longer inherit the old 5000 EGP development placeholder.

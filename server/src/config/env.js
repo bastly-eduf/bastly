@@ -1,31 +1,12 @@
 import 'dotenv/config';
 
+import { assertProductionEnvironment } from './productionEnv.js';
+
 const production =
   process.env.NODE_ENV === 'production';
 
-const requiredInProduction = [
-  'CLIENT_URL',
-  'MONGODB_URI',
-  'JWT_SECRET',
-  'GMAIL_USER',
-  'GMAIL_APP_PASSWORD',
-  'CLOUDFLARE_R2_ACCOUNT_ID',
-  'CLOUDFLARE_R2_ACCESS_KEY_ID',
-  'CLOUDFLARE_R2_SECRET_ACCESS_KEY',
-  'CLOUDFLARE_R2_BUCKET',
-  'CLOUDFLARE_R2_PUBLIC_BASE_URL',
-];
-
 if (production) {
-  const missing = requiredInProduction.filter(
-    (key) => !process.env[key],
-  );
-
-  if (missing.length) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}`,
-    );
-  }
+  assertProductionEnvironment(process.env);
 }
 
 function normalizeOrigin(value, fallback) {
@@ -92,39 +73,15 @@ const r2PublicBaseUrl = normalizeOptionalPublicUrl(
 
 
 const jwtSecret =
-  process.env.JWT_SECRET ||
-  'development-only-secret-change-before-production-please';
-
-if (production && jwtSecret.length < 32) {
-  throw new Error(
-    'JWT_SECRET must contain at least 32 characters in production.',
-  );
-}
-
-if (
-  production &&
-  jwtSecret.includes(
-    'development-only-secret',
-  )
-) {
-  throw new Error(
-    'JWT_SECRET is still using the development fallback.',
-  );
-}
+  String(
+    process.env.JWT_SECRET ||
+      'development-only-secret-change-before-production-please',
+  ).trim();
 
 const requireEmailVerification =
   String(
     process.env.REQUIRE_EMAIL_VERIFICATION,
   ).toLowerCase() === 'true';
-
-if (
-  production &&
-  !requireEmailVerification
-) {
-  throw new Error(
-    'REQUIRE_EMAIL_VERIFICATION must be true in production.',
-  );
-}
 
 export const env = Object.freeze({
   nodeEnv:
@@ -136,33 +93,32 @@ export const env = Object.freeze({
   clientOrigin,
 
   mongoUri:
-    process.env.MONGODB_URI ||
+    String(process.env.MONGODB_URI || '').trim() ||
     'mongodb://127.0.0.1:27017/bastly',
 
   jwtSecret,
   requireEmailVerification,
 
-  gmailUser: process.env.GMAIL_USER || '',
+  gmailUser: String(process.env.GMAIL_USER || '').trim(),
   gmailAppPassword:
-    process.env.GMAIL_APP_PASSWORD || '',
+    String(process.env.GMAIL_APP_PASSWORD || '').replace(/\s/g, ''),
   emailFromName:
-    process.env.EMAIL_FROM_NAME ||
-    'Bastly Academy',
+    String(process.env.EMAIL_FROM_NAME || 'Bastly Academy').trim(),
 
 
   r2AccountId:
-    process.env.CLOUDFLARE_R2_ACCOUNT_ID || '',
+    String(process.env.CLOUDFLARE_R2_ACCOUNT_ID || '').trim(),
   r2AccessKeyId:
-    process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '',
+    String(process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '').trim(),
   r2SecretAccessKey:
-    process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
+    String(process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '').trim(),
   r2Bucket:
-    process.env.CLOUDFLARE_R2_BUCKET || '',
+    String(process.env.CLOUDFLARE_R2_BUCKET || '').trim(),
   r2PublicBaseUrl,
 
-  adminName: process.env.ADMIN_NAME || '',
-  adminEmail: process.env.ADMIN_EMAIL || '',
+  adminName: String(process.env.ADMIN_NAME || '').trim(),
+  adminEmail: String(process.env.ADMIN_EMAIL || '').trim().toLowerCase(),
   adminPassword:
-    process.env.ADMIN_PASSWORD || '',
-  adminPhone: process.env.ADMIN_PHONE || '',
+    String(process.env.ADMIN_PASSWORD || ''),
+  adminPhone: String(process.env.ADMIN_PHONE || '').trim(),
 });

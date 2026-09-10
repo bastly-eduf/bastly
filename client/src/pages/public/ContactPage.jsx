@@ -10,13 +10,14 @@ import {
 
 import PublicPageHero from '../../components/public/PublicPageHero';
 import Seo from '../../components/seo/Seo';
+import { bastlyPublicConfig, bastlyWhatsAppUrl } from '../../config/publicConfig';
 
 const contactOptions = [
   {
     icon: MessageCircle,
     title: 'WhatsApp',
     text: 'Best for enrollment, current prices, payment, and group availability.',
-    href: 'https://wa.me/201000883609?text=Hi%20Bastly%20Academy%20%F0%9F%91%8B%0AI%20would%20like%20some%20help.',
+    href: bastlyWhatsAppUrl('Hi Bastly Academy 👋\nI would like some help.'),
     action: 'Open WhatsApp',
     external: true,
   },
@@ -24,16 +25,16 @@ const contactOptions = [
     icon: Phone,
     title: 'Phone',
     text: 'Use the Bastly contact number when you need to call instead.',
-    href: 'tel:+201000883609',
-    action: '01000883609',
+    href: bastlyPublicConfig.phoneHref,
+    action: bastlyPublicConfig.phoneDisplay,
     external: false,
   },
   {
     icon: Instagram,
     title: 'Instagram',
     text: 'Visit the academy profile for updates and social content.',
-    href: 'https://www.instagram.com/bastly.eduf/',
-    action: '@bastly.eduf',
+    href: bastlyPublicConfig.instagramUrl,
+    action: bastlyPublicConfig.instagramHandle,
     external: true,
   },
 ];
@@ -75,10 +76,8 @@ export default function ContactPage() {
           mainEntity: {
             '@type': 'EducationalOrganization',
             name: 'Bastly Academy',
-            telephone: '+201000883609',
-            sameAs: [
-              'https://www.instagram.com/bastly.eduf/',
-            ],
+            telephone: bastlyPublicConfig.phoneE164,
+            sameAs: [bastlyPublicConfig.instagramUrl],
           },
         }}
       />
@@ -192,7 +191,7 @@ export default function ContactPage() {
               is account-specific.
             </p>
             <a
-              href="https://wa.me/201000883609?text=Hi%20Bastly%20Academy%20%F0%9F%91%8B%0AI%20need%20help%20with%3A%20"
+              href={bastlyWhatsAppUrl('Hi Bastly Academy 👋\nI need help with: ')}
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-bastly-navy no-underline"

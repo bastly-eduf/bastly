@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/generate-static-seo.mjs",
-    "preview": "vite preview"
+    "build": "node scripts/check-build-env.mjs && vite build && node scripts/generate-static-seo.mjs",
+    "preview": "vite preview",
+    "check:env": "node scripts/check-build-env.mjs",
+    "check:env:prod": "node scripts/check-build-env.mjs --production"
   },
   "dependencies": {
     "react": "^19.1.1",

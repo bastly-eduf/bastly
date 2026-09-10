@@ -375,3 +375,19 @@ https://media.YOUR_DOMAIN
 ```
 
 rather than using the rate-limited `r2.dev` development hostname.
+
+---
+
+## Step 7E — final environment and owner handoff readiness
+
+Step 7E centralizes and validates Bastly's production configuration before any owner secrets are requested.
+
+- Server production validation is shared by startup and `npm run check:prod` so the build-time and runtime rules cannot silently drift.
+- Obvious placeholder/development values are rejected in production.
+- Render now generates the JWT signing secret instead of requiring it to be passed around manually.
+- Vercel Production builds validate `BACKEND_URL`, canonical site URL, same-origin `/api`, public contact values, and known accidental `VITE_` secret names before Vite builds.
+- Public WhatsApp, phone, and Instagram settings are centralized under `client/src/config/publicConfig.js` and fed by Vite environment values.
+- The old 5000 EGP development Course default is removed; unconfirmed prices remain hidden publicly.
+- `ENVIRONMENT.md` is the canonical owner handoff checklist.
+
+Before production infrastructure work, run the local build normally. Once the owner's final values are available, use the no-secret-output checks documented in `ENVIRONMENT.md`.

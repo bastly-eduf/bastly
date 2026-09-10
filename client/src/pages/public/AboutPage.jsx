@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 
 import PublicPageHero from '../../components/public/PublicPageHero';
 import Seo from '../../components/seo/Seo';
+import { bastlyWhatsAppUrl } from '../../config/publicConfig';
 
 const journey = [
   {
@@ -228,7 +229,7 @@ export default function AboutPage() {
             </div>
 
             <a
-              href="https://wa.me/201000883609?text=Hi%20Bastly%20Academy%20%F0%9F%91%8B%0AI%20would%20like%20to%20ask%20about%20your%20courses."
+              href={bastlyWhatsAppUrl('Hi Bastly Academy 👋\nI would like to ask about your courses.')}
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-bastly-navy no-underline"

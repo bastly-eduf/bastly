@@ -32,7 +32,7 @@ export const createCourseSchema = z.object({
   curriculum: z.string().trim().max(120).optional().default(''),
   academicYear: z.string().trim().max(30).optional(),
   description: z.string().trim().max(5000).optional().default(''),
-  price: z.coerce.number().min(0).optional().default(5000),
+  price: z.coerce.number().min(0).optional().default(0),
   priceConfirmed: z.boolean().optional().default(false),
   accessEndDate: z.coerce.date().optional(),
   status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),

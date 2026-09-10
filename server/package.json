@@ -10,7 +10,8 @@
     "seed:admin": "node src/scripts/seedAdmin.js",
     "check:prod": "node src/scripts/checkProductionConfig.js",
     "check:email": "node src/scripts/verifyEmailTransport.js",
-    "check:r2": "node src/scripts/verifyR2.js"
+    "check:r2": "node src/scripts/verifyR2.js",
+    "generate:jwt": "node src/scripts/generateJwtSecret.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

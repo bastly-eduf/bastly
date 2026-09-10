@@ -105,3 +105,14 @@ proxy/IP assumptions for the real Vercel -> Render path, production email/R2 che
 hosting configuration. After deployment, run role-by-role IDOR tests, concurrent one-time-token and
 reward tests, no-cache checks, security-header checks, and production log inspection before public
 launch.
+
+## Production secret boundary (Step 7E)
+
+Bastly now treats production configuration as two separate classes:
+
+- server-only secrets: MongoDB, Gmail App Password, JWT signing secret, and R2 access credentials
+- intentionally public build values: Bastly WhatsApp number, display phone number, Instagram URL, and canonical site URL
+
+Known secret names are rejected if they are accidentally introduced as `VITE_` variables. Render generates the JWT signing secret from the Blueprint, and production startup runs the same server environment contract used by `npm run check:prod`.
+
+See `ENVIRONMENT.md` for the exact owner handoff list. Do not copy real values into this repository.

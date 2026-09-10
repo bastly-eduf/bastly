@@ -24,7 +24,7 @@ const initialCourse = {
   curriculum: '',
   academicYear: '2026/2027',
   description: '',
-  price: 5000,
+  price: 0,
   priceConfirmed: false,
   accessEndDate: '2027-06-30',
   status: 'draft',
@@ -41,7 +41,7 @@ function courseToForm(course) {
     curriculum: course.curriculum || '',
     academicYear: course.academicYear || '',
     description: course.description || '',
-    price: course.price ?? 5000,
+    price: course.price ?? 0,
     priceConfirmed: Boolean(course.priceConfirmed),
     accessEndDate: course.accessEndDate
       ? new Date(course.accessEndDate)

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { bastlyWhatsAppUrl } from '../../config/publicConfig';
+
 const steps = [
   {
     number: '01',
@@ -23,9 +25,8 @@ const steps = [
   },
 ];
 
-const whatsappMessage = encodeURIComponent(
-  'Hi Bastly Academy, I would like to ask about enrolling in one of your courses.',
-);
+const whatsappMessage =
+  'Hi Bastly Academy, I would like to ask about enrolling in one of your courses.';
 
 export default function HowItWorks() {
   return (
@@ -57,7 +58,7 @@ export default function HowItWorks() {
             </p>
 
             <a
-              href={`https://wa.me/201000883609?text=${whatsappMessage}`}
+              href={bastlyWhatsAppUrl(whatsappMessage)}
               target="_blank"
               rel="noreferrer"
               className="group inline-flex items-center gap-2 font-extrabold text-white underline decoration-white/40 underline-offset-4"

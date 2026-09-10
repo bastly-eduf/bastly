@@ -1,4 +1,4 @@
-const BASTLY_WHATSAPP = '201000883609';
+import { bastlyWhatsAppUrl } from '../config/publicConfig';
 
 export function formatCoursePrice(course) {
   if (!course?.priceConfirmed || course.price === null) {
@@ -28,7 +28,5 @@ export function courseWhatsAppUrl(course) {
     .filter(Boolean)
     .join('\n');
 
-  return `https://wa.me/${BASTLY_WHATSAPP}?text=${encodeURIComponent(
-    message,
-  )}`;
+  return bastlyWhatsAppUrl(message);
 }

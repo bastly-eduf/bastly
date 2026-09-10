@@ -8,7 +8,9 @@
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
     "build": "npm run build --prefix client",
-    "start": "npm run start --prefix server"
+    "start": "npm run start --prefix server",
+    "check:production": "npm run check:prod --prefix server && npm run check:env:prod --prefix client",
+    "generate:jwt": "npm run generate:jwt --prefix server"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -2,6 +2,7 @@ import { MessageCircle } from 'lucide-react';
 
 import PublicPageHero from '../../components/public/PublicPageHero';
 import Seo from '../../components/seo/Seo';
+import { bastlyWhatsAppUrl } from '../../config/publicConfig';
 import { faqSections } from '../../data/faqData';
 
 export default function FaqPage() {
@@ -36,7 +37,7 @@ export default function FaqPage() {
           description="Enrollment, access, learning, grades, parents, attendance, and rewards — here is how Bastly works."
           aside={
             <a
-              href="https://wa.me/201000883609?text=Hi%20Bastly%20Academy%20%F0%9F%91%8B%0AI%20have%20a%20question%20that%20isn%27t%20covered%20in%20the%20FAQ."
+              href={bastlyWhatsAppUrl("Hi Bastly Academy 👋\nI have a question that isn't covered in the FAQ.")}
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-bastly-navy no-underline"
@@ -110,7 +111,7 @@ export default function FaqPage() {
               directly with the academy.
             </p>
             <a
-              href="https://wa.me/201000883609?text=Hi%20Bastly%20Academy%20%F0%9F%91%8B%0AI%20need%20help%20with%20a%20course%20or%20my%20account."
+              href={bastlyWhatsAppUrl('Hi Bastly Academy 👋\nI need help with a course or my account.')}
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[#1fa855] px-5 text-sm font-extrabold text-white no-underline"

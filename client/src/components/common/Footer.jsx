@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
-const whatsappMessage = encodeURIComponent(
-  'Hi Bastly Academy, I would like to ask about your courses.',
-);
+import { bastlyPublicConfig, bastlyWhatsAppUrl } from '../../config/publicConfig';
+
+const whatsappMessage =
+  'Hi Bastly Academy, I would like to ask about your courses.';
 
 export default function Footer() {
   return (
@@ -43,18 +44,18 @@ export default function Footer() {
             <p className="mb-4 font-heading text-sm font-bold text-white">Contact</p>
             <div className="grid gap-3 text-sm">
               <a
-                href={`https://wa.me/201000883609?text=${whatsappMessage}`}
+                href={bastlyWhatsAppUrl(whatsappMessage)}
                 target="_blank"
                 rel="noreferrer"
                 className="w-fit no-underline transition hover:text-white"
               >
                 WhatsApp
               </a>
-              <a href="tel:+201000883609" className="w-fit no-underline transition hover:text-white">
-                01000883609
+              <a href={bastlyPublicConfig.phoneHref} className="w-fit no-underline transition hover:text-white">
+                {bastlyPublicConfig.phoneDisplay}
               </a>
               <a
-                href="https://www.instagram.com/bastly.eduf/"
+                href={bastlyPublicConfig.instagramUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="w-fit no-underline transition hover:text-white"
