@@ -625,3 +625,153 @@ Step 6C should replace the public placeholder routes with real dynamic content:
 - real SEO metadata / structured public data foundation
 
 Then continue to PWA + production hardening and final launch QA.
+
+
+## Step 6C — Public Doctors + Courses + WhatsApp + SEO foundation
+
+The public placeholders are now backed by MongoDB.
+
+### Public API
+
+```text
+GET /api/public/doctors
+GET /api/public/doctors/:slug
+GET /api/public/courses
+GET /api/public/courses/:slug
+```
+
+Only `DoctorProfile.isPublished === true` and `Course.status === "published"`
+can appear publicly.
+
+Public responses do **not** expose:
+
+- Doctor login accounts
+- Student data
+- Group meeting URLs
+- Lesson/video IDs
+- Assessment answers
+- Private enrollment data
+
+Course detail may expose active group `name` + `scheduleLabel` only.
+
+### Public routes
+
+```text
+/doctors
+/doctors/:slug
+/courses
+/courses/:slug
+```
+
+Directories include search/filter UI and link to real MongoDB-backed profiles.
+
+Doctor profiles include:
+
+- portrait
+- subject
+- levels
+- public bio
+- qualifications
+- experience highlights
+- published courses
+
+Course pages include:
+
+- subject / level / curriculum
+- instructor
+- public description
+- academic year
+- access end date
+- active group schedule labels
+- Bastly platform benefits
+- WhatsApp enrollment CTA
+
+### Price safety
+
+The internal development default can remain `5000 EGP`, but the public API returns
+`price: null` unless `priceConfirmed === true`.
+
+Therefore public pages show:
+
+```text
+Price coming soon
+```
+
+until Admin explicitly confirms the real price.
+
+### WhatsApp enrollment
+
+Bastly WhatsApp remains:
+
+```text
+01000883609
++20 100 088 3609
+```
+
+Course CTAs open WhatsApp with a prefilled course-specific enrollment message.
+
+### Admin content controls
+
+Doctor Admin now supports edit/create for:
+
+- public bio
+- qualifications
+- experience
+- levels
+- portrait path
+- published
+- featured
+
+Course Admin now supports edit/create for:
+
+- public description
+- price + price-confirmed state
+- featured
+- status
+- academic details
+
+All 18 supplied instructor portraits are now present under:
+
+```text
+/client/public/doctors/
+```
+
+### SEO foundation
+
+`Seo.jsx` now supports:
+
+- title
+- meta description
+- canonical URL
+- robots
+- Open Graph
+- Twitter card tags
+- optional image
+- JSON-LD structured data
+
+Doctor detail uses `Person` JSON-LD.
+Course detail uses `Course` JSON-LD.
+Public directories use `CollectionPage` JSON-LD.
+
+Private Student / Parent / Doctor / Admin layouts are marked `noindex,nofollow`.
+
+Important: this is still a Vite SPA. Dynamic client-side metadata is useful and Google can
+render it, but the final SEO/launch step should add a prerender/static-render strategy for
+public routes so crawlers receive useful HTML immediately rather than depending on JS rendering.
+
+### Homepage
+
+Featured course and doctor previews now come from the public MongoDB API rather than the
+old hard-coded development arrays. Featured items sort first; if nothing is published,
+the homepage shows a truthful empty state instead of fake public data.
+
+### Next
+
+Step 6D:
+
+- real public About / FAQ / Contact pages
+- notification polish / account settings
+- PWA install/offline shell
+- public-route prerender + sitemap/robots
+- production security/deployment hardening
+- final launch QA

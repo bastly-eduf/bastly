@@ -7,6 +7,16 @@ export const createDoctorProfileSchema = z.object({
   subject: z.string().trim().min(2).max(120),
   levels: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
   bio: z.string().trim().max(3000).optional().default(''),
+  qualifications: z
+    .array(z.string().trim().min(1).max(300))
+    .max(30)
+    .optional()
+    .default([]),
+  experience: z
+    .array(z.string().trim().min(1).max(300))
+    .max(30)
+    .optional()
+    .default([]),
   imageUrl: z.string().trim().max(1000).optional().default(''),
   isFeatured: z.boolean().optional().default(false),
   isPublished: z.boolean().optional().default(true),

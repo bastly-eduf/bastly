@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom';
 
 import NotificationBell from '../components/notifications/NotificationBell';
+import Seo from '../components/seo/Seo';
 import { useAuth } from '../context/AuthContext';
 
 const navigation = [
@@ -36,6 +37,12 @@ export default function ParentLayout() {
 
   return (
     <div className="min-h-screen bg-[#f5f8fc] text-ink">
+      <Seo
+        title="Bastly Parent"
+        description="Private Bastly account area."
+        canonicalPath={null}
+        noIndex
+      />
       <aside
         className={[
           'fixed inset-y-0 left-0 z-50 w-[270px] bg-[#041632] px-4 py-5 text-white transition-transform lg:translate-x-0',

@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import NotificationBell from '../components/notifications/NotificationBell';
+import Seo from '../components/seo/Seo';
 import { useAuth } from '../context/AuthContext';
 
 const navigation = [
@@ -34,6 +35,12 @@ export default function DoctorLayout() {
 
   return (
     <div className="min-h-screen bg-[#f5f8fc] text-ink">
+      <Seo
+        title="Bastly Doctor"
+        description="Private Bastly account area."
+        canonicalPath={null}
+        noIndex
+      />
       <aside
         className={[
           'fixed inset-y-0 left-0 z-50 w-[280px] border-r border-white/8 bg-[#041632] px-4 py-5 text-white transition-transform lg:translate-x-0',
