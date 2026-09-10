@@ -1,21 +1,22 @@
-import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
 import ParentRelationship from '../models/ParentRelationship.js';
 import User from '../models/User.js';
 import { basePerformanceWeights, computeCourseWeekPerformance } from '../services/performance.service.js';
+import { accessWindowFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 import { endOfWeekUtc, parseWeekStart } from '../utils/week.js';
 
 async function studentCourseRows(studentId, weekStart) {
+  const weekEnd = endOfWeekUtc(weekStart);
   const enrollments = await Enrollment.find({
     student: studentId,
     status: 'active',
     paymentStatus: 'paid',
-    accessEndDate: { $gte: weekStart },
+    ...accessWindowFilter(weekStart, weekEnd),
   })
     .populate({
       path: 'course',
-      match: { status: { $ne: 'archived' } },
+      match: { status: 'published' },
       select: 'title level academicYear doctorProfile',
       populate: { path: 'doctorProfile', select: 'displayName' },
     })

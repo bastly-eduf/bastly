@@ -11,6 +11,7 @@ import {
 } from '../controllers/parentInsights.controller.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
+import { requireParentCurrentCourseAccess } from '../middleware/parentCourseAccess.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const studentPerformanceRouter = Router();
@@ -39,5 +40,6 @@ parentRouter.get(
 );
 parentRouter.get(
   '/children/:studentId/courses/:courseId',
+  requireParentCurrentCourseAccess,
   asyncHandler(parentChildCourseDetail),
 );

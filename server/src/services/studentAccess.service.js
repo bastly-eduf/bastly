@@ -1,6 +1,7 @@
 import Assessment from '../models/Assessment.js';
 import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
+import { currentAccessFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 
 export async function getStudentAssessmentAccess(studentId, assessmentId) {
@@ -15,7 +16,7 @@ export async function getStudentAssessmentAccess(studentId, assessmentId) {
     course: assessment.course,
     status: 'active',
     paymentStatus: 'paid',
-    accessEndDate: { $gte: new Date() },
+    ...currentAccessFilter(),
   });
 
   if (!enrollment) {

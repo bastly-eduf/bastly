@@ -2,7 +2,6 @@ import Assessment from '../models/Assessment.js';
 import AssessmentAttempt from '../models/AssessmentAttempt.js';
 import AttendanceRecord from '../models/AttendanceRecord.js';
 import AttendanceSession from '../models/AttendanceSession.js';
-import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
 import Lesson from '../models/Lesson.js';
 import LessonProgress from '../models/LessonProgress.js';
@@ -14,6 +13,7 @@ import {
   basePerformanceWeights,
   computeCourseWeekPerformance,
 } from '../services/performance.service.js';
+import { currentAccessFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 import {
   endOfWeekUtc,
@@ -67,17 +67,15 @@ async function assertLinkedParent(parentId, studentId) {
 }
 
 async function activeCourseEnrollments(studentId) {
-  const now = new Date();
-
   const enrollments = await Enrollment.find({
     student: studentId,
     status: 'active',
     paymentStatus: 'paid',
-    accessEndDate: { $gte: now },
+    ...currentAccessFilter(),
   })
     .populate({
       path: 'course',
-      match: { status: { $ne: 'archived' } },
+      match: { status: 'published' },
       select:
         'title level curriculum academicYear accessEndDate doctorProfile',
       populate: {
@@ -351,10 +349,11 @@ export async function parentChildCourseDetail(req, res) {
     course: req.params.courseId,
     status: 'active',
     paymentStatus: 'paid',
+    ...currentAccessFilter(),
   })
     .populate({
       path: 'course',
-      match: { status: { $ne: 'archived' } },
+      match: { status: 'published' },
       select:
         'title level curriculum academicYear accessEndDate doctorProfile',
       populate: {

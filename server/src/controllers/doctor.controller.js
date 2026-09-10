@@ -10,6 +10,7 @@ import {
   getOwnedLesson,
   getOwnedModule,
 } from '../services/doctorAccess.service.js';
+import { currentAccessFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 import {
   extractYouTubeVideoId,
@@ -37,6 +38,7 @@ export async function doctorOverview(req, res) {
     .lean();
 
   const courseIds = courses.map((course) => course._id);
+  const currentAccess = currentAccessFilter();
 
   const [
     activeGroups,
@@ -52,10 +54,14 @@ export async function doctorOverview(req, res) {
     Enrollment.countDocuments({
       course: { $in: courseIds },
       status: 'active',
+      paymentStatus: 'paid',
+      ...currentAccess,
     }),
     Enrollment.distinct('student', {
       course: { $in: courseIds },
       status: 'active',
+      paymentStatus: 'paid',
+      ...currentAccess,
     }),
     Module.countDocuments({
       course: { $in: courseIds },
@@ -106,6 +112,8 @@ export async function listDoctorCourses(req, res) {
     Enrollment.find({
       course: { $in: courseIds },
       status: 'active',
+      paymentStatus: 'paid',
+      ...currentAccessFilter(),
     })
       .select('course student')
       .lean(),
@@ -165,6 +173,8 @@ export async function getDoctorCourseWorkspace(req, res) {
     Enrollment.countDocuments({
       course: course._id,
       status: 'active',
+      paymentStatus: 'paid',
+      ...currentAccessFilter(),
     }),
   ]);
 
@@ -369,6 +379,8 @@ export async function listDoctorStudents(req, res) {
   const query = {
     course: { $in: courseIds },
     status: 'active',
+    paymentStatus: 'paid',
+    ...currentAccessFilter(),
   };
 
   if (req.query.courseId) {

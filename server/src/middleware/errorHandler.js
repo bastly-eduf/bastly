@@ -24,6 +24,13 @@ export function errorHandler(error, req, res, next) {
     });
   }
 
+  if (error?.name === 'CastError') {
+    return res.status(400).json({
+      error: 'Invalid request identifier.',
+      requestId,
+    });
+  }
+
   const status = normalizeStatus(error);
 
   if (status >= 500) {

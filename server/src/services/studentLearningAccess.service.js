@@ -2,17 +2,16 @@ import Course from '../models/Course.js';
 import Enrollment from '../models/Enrollment.js';
 import Lesson from '../models/Lesson.js';
 import Module from '../models/Module.js';
+import { currentAccessFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 
 export async function getStudentCourseAccess(studentId, courseId) {
-  const now = new Date();
-
   const enrollment = await Enrollment.findOne({
     student: studentId,
     course: courseId,
     status: 'active',
     paymentStatus: 'paid',
-    accessEndDate: { $gte: now },
+    ...currentAccessFilter(),
   })
     .populate('group', 'name scheduleLabel meetingUrl active')
     .lean();

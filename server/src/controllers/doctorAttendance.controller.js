@@ -9,12 +9,13 @@ import {
   notifyParentsOfStudent,
 } from '../services/notification.service.js';
 import { getDoctorProfileForUser, getOwnedCourse } from '../services/doctorAccess.service.js';
+import { accessWindowFilter } from '../utils/accessWindow.js';
 import { HttpError } from '../utils/httpError.js';
 import { endOfWeekUtc, parseWeekStart } from '../utils/week.js';
 
 async function ownedGroup(userId, groupId) {
   const group = await Group.findById(groupId);
-  if (!group) throw new HttpError(404, 'Group not found.');
+  if (!group || !group.active) throw new HttpError(404, 'Active group not found.');
   const { profile, course } = await getOwnedCourse(userId, group.course);
   return { profile, course, group };
 }
@@ -22,6 +23,16 @@ async function ownedGroup(userId, groupId) {
 async function ownedSession(userId, sessionId) {
   const session = await AttendanceSession.findById(sessionId);
   if (!session) throw new HttpError(404, 'Attendance session not found.');
+
+  const group = await Group.findOne({
+    _id: session.group,
+    course: session.course,
+  }).select('_id');
+
+  if (!group) {
+    throw new HttpError(404, 'Attendance session hierarchy is not available.');
+  }
+
   const { profile, course } = await getOwnedCourse(userId, session.course);
   return { profile, course, session };
 }
@@ -66,7 +77,6 @@ export async function attendanceWorkspace(req, res) {
 export async function createAttendanceSession(req, res) {
   const { course, group } = await ownedGroup(req.user._id, req.params.groupId);
   const heldAt = new Date(req.validatedBody.heldAt);
-  const now = new Date();
 
   const enrollments = await Enrollment.find({
     course: course._id,
@@ -76,6 +86,7 @@ export async function createAttendanceSession(req, res) {
     accessEndDate: { $gte: heldAt },
     $or: [
       { accessStartDate: null },
+      { accessStartDate: { $exists: false } },
       { accessStartDate: { $lte: heldAt } },
     ],
   })
@@ -159,6 +170,8 @@ export async function markAttendance(req, res) {
     })),
   );
 
+  // Finalized sessions remain editable for legitimate corrections. Updating one
+  // refreshes finalizedAt so downstream views have an accurate correction time.
   if (session.status === 'finalized') {
     session.finalizedAt = now;
     await session.save();
@@ -248,7 +261,7 @@ export async function doctorWeeklyPerformance(req, res) {
     course: course._id,
     status: 'active',
     paymentStatus: 'paid',
-    accessEndDate: { $gte: weekStart },
+    ...accessWindowFilter(weekStart, weekEnd),
   })
     .populate('student', 'fullName email phone status')
     .populate('group', 'name scheduleLabel')

@@ -102,18 +102,44 @@ export async function activateEnrollment({
   paidAt,
   adminNote,
 }) {
-  const course = await Course.findById(enrollment.course).lean();
+  const { course } = await validateEnrollmentReferences({
+    studentId: enrollment.student,
+    courseId: enrollment.course,
+    groupId: enrollment.group,
+  });
 
-  if (!course) {
-    throw new HttpError(400, 'The course for this enrollment no longer exists.');
+  const now = new Date();
+
+  if (course.status !== 'published') {
+    throw new HttpError(
+      400,
+      'Publish the course before confirming payment and unlocking access.',
+    );
+  }
+
+  if (!course.accessEndDate || new Date(course.accessEndDate) < now) {
+    throw new HttpError(
+      400,
+      'This course access period has already ended. Update the course end date first.',
+    );
+  }
+
+  if (
+    !course.priceConfirmed &&
+    (pricePaid === undefined || pricePaid === null)
+  ) {
+    throw new HttpError(
+      400,
+      'Enter the amount paid because this course does not have a confirmed public price.',
+    );
   }
 
   enrollment.status = 'active';
   enrollment.paymentStatus = 'paid';
   enrollment.pricePaid =
     pricePaid === undefined || pricePaid === null ? course.price : pricePaid;
-  enrollment.paidAt = paidAt || new Date();
-  enrollment.accessStartDate = new Date();
+  enrollment.paidAt = paidAt || now;
+  enrollment.accessStartDate = now;
   enrollment.accessEndDate = course.accessEndDate;
   enrollment.unregisteredAt = null;
   enrollment.unregisteredBy = null;
