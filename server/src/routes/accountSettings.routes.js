@@ -7,7 +7,7 @@ import {
   updateAccountProfile,
 } from '../controllers/accountSettings.controller.js';
 import { authenticate } from '../middleware/authenticate.js';
-import { authLimiter } from '../middleware/rateLimiters.js';
+import { sensitiveAccountLimiter } from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
 import {
   changePasswordSchema,
@@ -32,14 +32,14 @@ router.patch(
 
 router.post(
   '/settings/change-password',
-  authLimiter,
+  sensitiveAccountLimiter,
   validate(changePasswordSchema),
   asyncHandler(changePassword),
 );
 
 router.post(
   '/settings/invalidate-sessions',
-  authLimiter,
+  sensitiveAccountLimiter,
   asyncHandler(invalidateOtherSessions),
 );
 

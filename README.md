@@ -1107,19 +1107,10 @@ See `DEPLOYMENT.md` for the full deployment order and production acceptance chec
 
 ### Next
 
-Step 7C is not another ZIP-first feature step.
-
-The next work should happen against the actual hosting accounts:
-
-1. create/connect the correct Bastly Render workspace
-2. deploy the API
-3. verify `/api/health`
-4. create/connect the Bastly Vercel project
-5. configure the three frontend production env variables
-6. deploy the frontend
-7. test auth/cookies through the real URLs
-8. connect the final domain when available
-9. run production QA
+Deployment is intentionally paused while Bastly goes through the pre-production hardening steps.
+Step 7C adds media storage readiness; Step 7D hardens authentication, one-time links, reward
+state changes, request tracing, and endpoint-specific abuse limits. Step 7E will finish the
+production ENV contract and hosting-specific readiness before any live deployment.
 
 ## Step 7C — Cloudflare R2 media pipeline
 
@@ -1214,3 +1205,75 @@ npm install --prefix server
 
 before `npm run dev`. This also updates `server/package-lock.json`; commit that lockfile with the
 rest of Step 7C so Render's later `npm ci` build is reproducible.
+
+
+## Step 7D — security and state-integrity hardening
+
+Step 7D is a pre-production hardening pass. It does not require any owner secrets and does not
+change the product's role model or business rules.
+
+### Session hardening
+
+Production auth cookies now use the `__Host-` cookie prefix:
+
+```text
+__Host-bastly_session
+```
+
+The development cookie remains `bastly_session` so localhost HTTP keeps working. JWT signing and
+verification are explicitly pinned to `HS256`, with the existing issuer/audience checks and
+`tokenVersion` invalidation kept intact.
+
+### Login timing padding
+
+Unknown-email logins now still execute a bcrypt comparison against a dummy hash before returning
+the same `Invalid email or password` response. This reduces the simple response-time difference
+between a known and unknown login email.
+
+### Atomic one-time-token consumption
+
+Password reset, email verification, Doctor invitation acceptance, and Parent invitation
+acceptance now claim one-time tokens with an atomic MongoDB `findOneAndUpdate` transition before
+the protected account mutation. Two concurrent requests cannot both consume the same unused
+link.
+
+Invitation validation remains read-only so the invitation screen can inspect a valid token
+without consuming it.
+
+### Endpoint-specific rate limits
+
+The previous shared auth limiter is split into separate limits for:
+
+```text
+login
+student registration
+account recovery / verification
+invitations
+sensitive account actions
+assessment submissions
+media mutations
+spin requests
+reward redemption actions
+```
+
+The global API limit remains a final broad guard. These limits currently use the in-memory
+`express-rate-limit` store, which is appropriate for the planned single Render instance. If the
+API is later horizontally scaled, move rate-limit state to a shared store before relying on the
+limits across instances.
+
+### Atomic reward redemption
+
+A Bastly Card now moves from `assigned` to `redeemed` with one conditional MongoDB update. A
+second concurrent redeem request cannot independently pass a read-then-save race.
+
+### Request IDs and safe server errors
+
+Every request receives an `X-Request-Id`. Server errors log that ID, HTTP method, path, error name,
+message, and stack on the server without logging bodies, cookies, Authorization headers, or query
+strings. This is important because verification/reset/invitation query strings can contain secret
+tokens.
+
+500 responses stay generic in production but include the request ID for support/debugging.
+Validation details are never copied onto a 500 response.
+
+See `SECURITY.md` for the current security model and the remaining pre-launch checks.

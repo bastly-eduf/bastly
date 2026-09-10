@@ -7,6 +7,26 @@ function hashToken(rawToken) {
   return crypto.createHash('sha256').update(rawToken).digest('hex');
 }
 
+function validTokenQuery(rawToken, type, now = new Date()) {
+  if (!rawToken || typeof rawToken !== 'string') {
+    throw new HttpError(400, 'Invalid or missing token.');
+  }
+
+  return {
+    tokenHash: hashToken(rawToken),
+    type,
+    usedAt: null,
+    expiresAt: { $gt: now },
+  };
+}
+
+function invalidTokenError() {
+  return new HttpError(
+    400,
+    'This link is invalid, expired, or has already been used.',
+  );
+}
+
 export async function createOneTimeToken({
   user = null,
   type,
@@ -38,27 +58,30 @@ export async function createOneTimeToken({
 }
 
 export async function findValidOneTimeToken(rawToken, type) {
-  if (!rawToken || typeof rawToken !== 'string') {
-    throw new HttpError(400, 'Invalid or missing token.');
-  }
-
-  const tokenHash = hashToken(rawToken);
-
-  const record = await AuthToken.findOne({
-    tokenHash,
-    type,
-    usedAt: null,
-    expiresAt: { $gt: new Date() },
-  });
+  const record = await AuthToken.findOne(
+    validTokenQuery(rawToken, type),
+  );
 
   if (!record) {
-    throw new HttpError(400, 'This link is invalid, expired, or has already been used.');
+    throw invalidTokenError();
   }
 
   return record;
 }
 
-export async function consumeOneTimeToken(record) {
-  record.usedAt = new Date();
-  await record.save();
+// State-changing token flows claim the token atomically before mutating account data.
+// Only one concurrent request can move a still-valid token from unused to used.
+export async function consumeValidOneTimeToken(rawToken, type) {
+  const now = new Date();
+  const record = await AuthToken.findOneAndUpdate(
+    validTokenQuery(rawToken, type, now),
+    { $set: { usedAt: now } },
+    { new: true },
+  );
+
+  if (!record) {
+    throw invalidTokenError();
+  }
+
+  return record;
 }

@@ -11,7 +11,7 @@ import {
 import { HttpError } from '../utils/httpError.js';
 import { sanitizeUser } from '../utils/sanitizeUser.js';
 import {
-  consumeOneTimeToken,
+  consumeValidOneTimeToken,
   findValidOneTimeToken,
 } from '../services/token.service.js';
 import { writeAuditLog } from '../services/audit.service.js';
@@ -82,6 +82,10 @@ export async function acceptDoctorInvitation(req, res) {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
+  // Claim the invitation before creating/linking the doctor account so a
+  // second concurrent request cannot accept the same invitation.
+  await consumeValidOneTimeToken(rawToken, 'doctor_invite');
+
   const user = await User.create({
     fullName: token.metadata?.fullName || token.targetEmail,
     email: token.targetEmail,
@@ -97,8 +101,6 @@ export async function acceptDoctorInvitation(req, res) {
       user: user._id,
     });
   }
-
-  await consumeOneTimeToken(token);
 
   const hydratedUser = await User.findById(user._id).select('+tokenVersion');
   const session = signAuthToken(hydratedUser);
@@ -151,6 +153,8 @@ export async function acceptParentInvitation(req, res) {
       throw new HttpError(403, 'This parent account is currently unavailable.');
     }
 
+    await consumeValidOneTimeToken(rawToken, 'parent_invite');
+
     if (!user.emailVerifiedAt) {
       user.emailVerifiedAt = new Date();
       await user.save();
@@ -160,8 +164,6 @@ export async function acceptParentInvitation(req, res) {
     relationship.status = 'active';
     relationship.linkedAt = new Date();
     await relationship.save();
-
-    await consumeOneTimeToken(token);
 
     await writeAuditLog({
       actor: user._id,
@@ -184,6 +186,8 @@ export async function acceptParentInvitation(req, res) {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
+  await consumeValidOneTimeToken(rawToken, 'parent_invite');
+
   user = await User.create({
     fullName: token.metadata?.parentName || relationship.invitedName,
     email: token.targetEmail,
@@ -198,8 +202,6 @@ export async function acceptParentInvitation(req, res) {
   relationship.status = 'active';
   relationship.linkedAt = new Date();
   await relationship.save();
-
-  await consumeOneTimeToken(token);
 
   const hydratedUser = await User.findById(user._id).select('+tokenVersion');
   const session = signAuthToken(hydratedUser);

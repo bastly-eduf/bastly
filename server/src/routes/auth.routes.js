@@ -7,7 +7,10 @@ import {
   registerStudent,
 } from '../controllers/auth.controller.js';
 import { authenticate } from '../middleware/authenticate.js';
-import { authLimiter } from '../middleware/rateLimiters.js';
+import {
+  loginLimiter,
+  registrationLimiter,
+} from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
 import {
   loginSchema,
@@ -19,14 +22,14 @@ const router = Router();
 
 router.post(
   '/register/student',
-  authLimiter,
+  registrationLimiter,
   validate(studentRegistrationSchema),
   asyncHandler(registerStudent),
 );
 
 router.post(
   '/login',
-  authLimiter,
+  loginLimiter,
   validate(loginSchema),
   asyncHandler(login),
 );

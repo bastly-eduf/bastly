@@ -321,6 +321,17 @@ Platform
 [ ] offline screen
 [ ] no authenticated API response is cached
 [ ] mobile nav on all roles
+
+Security
+[ ] production session cookie is `__Host-bastly_session`, Secure, HttpOnly, SameSite=Lax, Path=/
+[ ] wrong-origin state-changing request is rejected
+[ ] reused password-reset link is rejected
+[ ] reused Doctor/Parent invitation is rejected
+[ ] repeated quiz submission still creates only one quiz attempt
+[ ] concurrent Bastly Card redeem produces only one successful state transition
+[ ] 500 response contains a request ID but no stack/details in production
+[ ] rate-limit behavior checked through the final Vercel -> Render proxy chain
+[ ] no secret token appears in server request logs
 ```
 
 ---

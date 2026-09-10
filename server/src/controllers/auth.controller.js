@@ -21,6 +21,12 @@ import {
 } from '../services/invitation.service.js';
 
 const BCRYPT_ROUNDS = 12;
+// Keep unknown-email login attempts on the same expensive bcrypt path as known users.
+// The value is not a credential; it is only timing padding generated once at startup.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync(
+  'bastly-login-timing-padding-not-a-user-password',
+  BCRYPT_ROUNDS,
+);
 
 export async function registerStudent(req, res) {
   const {
@@ -145,13 +151,12 @@ export async function login(req, res) {
 
   const user = await User.findOne({ email }).select('+passwordHash +tokenVersion');
 
-  if (!user) {
-    throw new HttpError(401, 'Invalid email or password.');
-  }
+  const passwordMatches = await bcrypt.compare(
+    password,
+    user?.passwordHash || DUMMY_PASSWORD_HASH,
+  );
 
-  const passwordMatches = await bcrypt.compare(password, user.passwordHash);
-
-  if (!passwordMatches) {
+  if (!user || !passwordMatches) {
     throw new HttpError(401, 'Invalid email or password.');
   }
 

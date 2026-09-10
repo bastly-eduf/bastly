@@ -1,9 +1,14 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 
-export const AUTH_COOKIE = 'bastly_session';
+// __Host- cookies cannot specify Domain, must use Path=/, and must be Secure.
+// Keeping the simpler name in development preserves localhost HTTP behavior.
+export const AUTH_COOKIE = env.isProduction
+  ? '__Host-bastly_session'
+  : 'bastly_session';
 
 const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+const JWT_ALGORITHM = 'HS256';
 
 export function signAuthToken(user) {
   return jwt.sign(
@@ -14,6 +19,7 @@ export function signAuthToken(user) {
     },
     env.jwtSecret,
     {
+      algorithm: JWT_ALGORITHM,
       expiresIn: '7d',
       issuer: 'bastly-api',
       audience: 'bastly-web',
@@ -23,6 +29,7 @@ export function signAuthToken(user) {
 
 export function verifyAuthToken(token) {
   return jwt.verify(token, env.jwtSecret, {
+    algorithms: [JWT_ALGORITHM],
     issuer: 'bastly-api',
     audience: 'bastly-web',
   });

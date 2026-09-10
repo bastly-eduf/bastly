@@ -35,6 +35,7 @@ router.post(
 );
 router.delete(
   '/:entityType/:entityId/:slot',
+  mediaUploadLimiter,
   asyncHandler(removeMedia),
 );
 

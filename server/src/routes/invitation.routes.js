@@ -5,25 +5,25 @@ import {
   acceptParentInvitation,
   validateInvitation,
 } from '../controllers/invitation.controller.js';
-import { authLimiter } from '../middleware/rateLimiters.js';
+import { invitationLimiter } from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
 import { acceptInviteSchema } from '../validators/invitation.validators.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
 
-router.get('/validate', authLimiter, asyncHandler(validateInvitation));
+router.get('/validate', invitationLimiter, asyncHandler(validateInvitation));
 
 router.post(
   '/doctor/accept',
-  authLimiter,
+  invitationLimiter,
   validate(acceptInviteSchema),
   asyncHandler(acceptDoctorInvitation),
 );
 
 router.post(
   '/parent/accept',
-  authLimiter,
+  invitationLimiter,
   validate(acceptInviteSchema),
   asyncHandler(acceptParentInvitation),
 );

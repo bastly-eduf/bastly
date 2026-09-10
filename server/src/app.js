@@ -9,12 +9,14 @@ import { apiLimiter } from './middleware/rateLimiters.js';
 import { notFound } from './middleware/notFound.js';
 import { noStore } from './middleware/noStore.js';
 import { requestOriginGuard } from './middleware/requestOriginGuard.js';
+import { requestId } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
+app.use(requestId);
 
 app.use(
   helmet({

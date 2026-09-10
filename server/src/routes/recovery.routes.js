@@ -6,7 +6,7 @@ import {
   resetPassword,
   verifyEmail,
 } from '../controllers/accountRecovery.controller.js';
-import { authLimiter } from '../middleware/rateLimiters.js';
+import { recoveryLimiter } from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
 import {
   forgotPasswordSchema,
@@ -19,28 +19,28 @@ const router = Router();
 
 router.post(
   '/verify-email',
-  authLimiter,
+  recoveryLimiter,
   validate(tokenSchema),
   asyncHandler(verifyEmail),
 );
 
 router.post(
   '/resend-verification',
-  authLimiter,
+  recoveryLimiter,
   validate(forgotPasswordSchema),
   asyncHandler(resendVerification),
 );
 
 router.post(
   '/forgot-password',
-  authLimiter,
+  recoveryLimiter,
   validate(forgotPasswordSchema),
   asyncHandler(forgotPassword),
 );
 
 router.post(
   '/reset-password',
-  authLimiter,
+  recoveryLimiter,
   validate(resetPasswordSchema),
   asyncHandler(resetPassword),
 );

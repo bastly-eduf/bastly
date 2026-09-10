@@ -569,28 +569,46 @@ export async function studentRewardDashboard(studentId) {
 export async function redeemStudentAssignment(studentId, assignmentId) {
   await expireRewards();
 
-  const assignment = await RewardAssignment.findOne({
+  const redeemedAt = new Date();
+  const assignment = await RewardAssignment.findOneAndUpdate(
+    {
+      _id: assignmentId,
+      student: studentId,
+      status: 'assigned',
+    },
+    {
+      $set: {
+        status: 'redeemed',
+        redeemedAt,
+      },
+    },
+    { new: true },
+  );
+
+  if (assignment) {
+    return assignment;
+  }
+
+  // A second concurrent redeem cannot pass the atomic status transition above.
+  // Read only after the failed transition so we can return the correct reason.
+  const existing = await RewardAssignment.findOne({
     _id: assignmentId,
     student: studentId,
-  });
+  }).lean();
 
-  if (!assignment) {
+  if (!existing) {
     throw new HttpError(404, 'Bastly Card not found.');
   }
 
-  if (assignment.status === 'expired') {
+  if (existing.status === 'expired') {
     throw new HttpError(409, 'This Bastly Card has expired.');
   }
 
-  if (assignment.status === 'redeemed') {
+  if (existing.status === 'redeemed') {
     throw new HttpError(409, 'This Bastly Card is already marked as used.');
   }
 
-  assignment.status = 'redeemed';
-  assignment.redeemedAt = new Date();
-  await assignment.save();
-
-  return assignment;
+  throw new HttpError(409, 'This Bastly Card is not available to redeem.');
 }
 
 export async function expireRewardRecords() {

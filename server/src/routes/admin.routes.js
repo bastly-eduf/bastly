@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { inviteDoctor } from '../controllers/admin.controller.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { authorize } from '../middleware/authorize.js';
-import { authLimiter } from '../middleware/rateLimiters.js';
+import { invitationLimiter } from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
 import { createDoctorInviteSchema } from '../validators/invitation.validators.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -14,7 +14,7 @@ router.use(authenticate, authorize('admin'));
 
 router.post(
   '/invitations/doctor',
-  authLimiter,
+  invitationLimiter,
   validate(createDoctorInviteSchema),
   asyncHandler(inviteDoctor),
 );

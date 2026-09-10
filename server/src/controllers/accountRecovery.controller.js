@@ -9,7 +9,7 @@ import {
 } from '../utils/auth.js';
 import { sanitizeUser } from '../utils/sanitizeUser.js';
 import {
-  consumeOneTimeToken,
+  consumeValidOneTimeToken,
   createOneTimeToken,
   findValidOneTimeToken,
 } from '../services/token.service.js';
@@ -25,7 +25,7 @@ import { writeAuditLog } from '../services/audit.service.js';
 const BCRYPT_ROUNDS = 12;
 
 export async function verifyEmail(req, res) {
-  const record = await findValidOneTimeToken(
+  const record = await consumeValidOneTimeToken(
     req.validatedBody.token,
     'email_verification',
   );
@@ -40,8 +40,6 @@ export async function verifyEmail(req, res) {
     user.emailVerifiedAt = new Date();
     await user.save();
   }
-
-  await consumeOneTimeToken(record);
 
   if (user.role === 'student') {
     try {
@@ -130,12 +128,16 @@ export async function resetPassword(req, res) {
     return res.status(400).json({ error: 'This account is not available.' });
   }
 
-  user.passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+
+  // Claim the one-time link atomically after the expensive password hash but
+  // before changing the account. A concurrent replay will fail here.
+  await consumeValidOneTimeToken(rawToken, 'password_reset');
+
+  user.passwordHash = passwordHash;
   user.passwordChangedAt = new Date();
   user.tokenVersion = (user.tokenVersion || 0) + 1;
   await user.save();
-
-  await consumeOneTimeToken(record);
 
   await writeAuditLog({
     actor: user._id,
