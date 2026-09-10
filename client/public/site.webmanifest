@@ -3,14 +3,16 @@
   "name": "Bastly Academy",
   "short_name": "Bastly",
   "description": "Courses, learning, tracking, and rewards in one Bastly Academy student experience.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "orientation": "portrait-primary",
   "background_color": "#F4FAFF",
   "theme_color": "#061F49",
   "categories": ["education"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/brand/icon-192.png",

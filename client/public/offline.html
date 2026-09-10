@@ -50,15 +50,17 @@
         color: #64748B;
         line-height: 1.7;
       }
-      button {
+      a {
+        display: inline-flex;
         min-height: 46px;
-        border: 0;
+        align-items: center;
+        justify-content: center;
         border-radius: 999px;
         padding: 0 20px;
         color: white;
         background: #237FD1;
         font-weight: 800;
-        cursor: pointer;
+        text-decoration: none;
       }
     </style>
   </head>
@@ -70,7 +72,7 @@
         Bastly needs an internet connection for course access, videos, assessments,
         attendance, progress, and account data.
       </p>
-      <button type="button" onclick="window.location.reload()">Try again</button>
+      <a href="/">Try again</a>
     </main>
   </body>
 </html>

@@ -5,7 +5,24 @@
   "outputDirectory": "dist",
   "routes": [
     {
+      "src": "/(.*)",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.r2.cloudflarestorage.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' https:; upgrade-insecure-requests",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-Permitted-Cross-Domain-Policies": "none",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+      },
+      "continue": true
+    },
+    {
       "src": "/api/(.*)",
+      "headers": {
+        "Cache-Control": "private, no-store, max-age=0",
+        "x-vercel-enable-rewrite-caching": "0"
+      },
       "dest": "${BACKEND_URL}/api/$1",
       "env": [
         "BACKEND_URL"
@@ -14,9 +31,25 @@
     {
       "src": "/sw.js",
       "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Service-Worker-Allowed": "/"
       },
       "dest": "/sw.js"
+    },
+    {
+      "src": "/site.webmanifest",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "dest": "/site.webmanifest"
+    },
+    {
+      "src": "/offline.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "X-Robots-Tag": "noindex, nofollow"
+      },
+      "dest": "/offline.html"
     },
     {
       "src": "/assets/(.*)",
@@ -26,38 +59,69 @@
       "dest": "/assets/$1"
     },
     {
+      "src": "/brand/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, must-revalidate"
+      },
+      "continue": true
+    },
+    {
       "handle": "filesystem"
     },
     {
       "src": "^/$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/index.html"
     },
     {
       "src": "^/about/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/about/index.html"
     },
     {
       "src": "^/faq/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/faq/index.html"
     },
     {
       "src": "^/contact/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/contact/index.html"
     },
     {
       "src": "^/courses/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/courses/index.html"
     },
     {
       "src": "^/doctors/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/doctors/index.html"
     },
     {
       "src": "^/courses/([a-z0-9-]+)/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/courses/$1/index.html"
     },
     {
       "src": "^/doctors/([a-z0-9-]+)/?$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
       "dest": "/doctors/$1/index.html"
     },
     {

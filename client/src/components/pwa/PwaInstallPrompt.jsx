@@ -32,6 +32,20 @@ function isStandalone() {
   );
 }
 
+function isCanonicalInstallOrigin() {
+  if (typeof window === 'undefined') return false;
+  if (window.location.protocol !== 'https:') return false;
+
+  try {
+    const siteUrl = import.meta.env.VITE_SITE_URL;
+    if (!siteUrl) return false;
+
+    return window.location.origin === new URL(siteUrl).origin;
+  } catch {
+    return false;
+  }
+}
+
 export default function PwaInstallPrompt() {
   const [installEvent, setInstallEvent] =
     useState(null);
@@ -48,6 +62,7 @@ export default function PwaInstallPrompt() {
 
   useEffect(() => {
     if (
+      !isCanonicalInstallOrigin() ||
       isStandalone() ||
       recentlyDismissed()
     ) {
@@ -115,11 +130,13 @@ export default function PwaInstallPrompt() {
   const install = async () => {
     if (!installEvent) return;
 
-    await installEvent.prompt();
-    await installEvent.userChoice;
-
-    setInstallEvent(null);
-    setVisible(false);
+    try {
+      await installEvent.prompt();
+      await installEvent.userChoice;
+    } finally {
+      setInstallEvent(null);
+      setVisible(false);
+    }
   };
 
   if (!visible) return null;
