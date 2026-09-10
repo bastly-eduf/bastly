@@ -1009,3 +1009,114 @@ Step 7B should prepare the real deployment topology and production config:
 
 Once the real domains exist, perform the final SEO/PWA/security/performance QA against those
 actual URLs instead of localhost.
+
+
+## Step 7B — Production deployment preparation
+
+Bastly now has production deployment configuration for the planned topology:
+
+```text
+Vercel frontend
+    ↓ /api same-origin proxy
+Render Express API
+    ↓
+MongoDB Atlas
+```
+
+### Why the Vercel API proxy matters
+
+The frontend no longer needs to call an `onrender.com` API directly from the browser.
+
+Production uses:
+
+```text
+VITE_API_URL=/api
+BACKEND_URL=https://<render-service>
+```
+
+Vercel proxies `/api/*` to Render, so the HttpOnly session cookie remains first-party from the
+browser's perspective. This avoids making Bastly depend on cross-site / third-party cookie
+behavior between unrelated platform domains.
+
+Local Vite also proxies `/api` to `http://localhost:5000`, making development match production
+more closely.
+
+### Render
+
+Added `/render.yaml` with:
+
+- Node web service
+- Frankfurt region
+- `server` monorepo root
+- `npm ci && npm run check:prod`
+- `npm start`
+- `/api/health`
+- commit auto-deploy
+- production env names without secret values
+
+The health endpoint now returns 503 if Mongoose is disconnected.
+
+The server also binds explicitly to `0.0.0.0` and closes MongoDB during graceful shutdown.
+
+### Production environment guardrails
+
+Production refuses to start/build if important configuration is unsafe:
+
+- missing `CLIENT_URL`
+- non-HTTPS `CLIENT_URL`
+- missing MongoDB URI
+- weak JWT secret
+- email verification disabled
+- missing Gmail credentials
+
+Added:
+
+```text
+npm run check:prod --prefix server
+npm run check:email --prefix server
+```
+
+No secret values are printed by these checks.
+
+### Vercel
+
+Added `client/vercel.json`.
+
+Routing order:
+
+1. `/api/*` → Render using `BACKEND_URL`
+2. immutable hashed assets
+3. real static files
+4. generated public SEO HTML shells
+5. everything else → `private.html`
+
+The private fallback is `noindex,nofollow` both in HTML and through `X-Robots-Tag`.
+
+### SEO production safety
+
+The SEO generator now:
+
+- understands `BACKEND_URL`
+- can derive a Vercel production site URL
+- forces Vercel previews to noindex
+- creates `private.html`
+- generates robots that block `/api/`
+- fails a Vercel production build if the public API cannot be reached for dynamic Doctor/Course discovery
+
+See `DEPLOYMENT.md` for the full deployment order and production acceptance checklist.
+
+### Next
+
+Step 7C is not another ZIP-first feature step.
+
+The next work should happen against the actual hosting accounts:
+
+1. create/connect the correct Bastly Render workspace
+2. deploy the API
+3. verify `/api/health`
+4. create/connect the Bastly Vercel project
+5. configure the three frontend production env variables
+6. deploy the frontend
+7. test auth/cookies through the real URLs
+8. connect the final domain when available
+9. run production QA

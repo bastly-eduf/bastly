@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL:
+    import.meta.env.VITE_API_URL || '/api',
   withCredentials: true,
   timeout: 15000,
   headers: {
@@ -9,8 +10,13 @@ export const api = axios.create({
   },
 });
 
-export function apiErrorMessage(error, fallback = 'Something went wrong.') {
-  return error?.response?.data?.error || fallback;
+export function apiErrorMessage(
+  error,
+  fallback = 'Something went wrong.',
+) {
+  return (
+    error?.response?.data?.error || fallback
+  );
 }
 
 export function apiFieldErrors(error) {

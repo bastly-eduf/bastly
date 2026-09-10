@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: bastly-api
+    runtime: node
+    region: frankfurt
+    plan: starter
+    rootDir: server
+    buildCommand: npm ci && npm run check:prod
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REQUIRE_EMAIL_VERIFICATION
+        value: "true"
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: Bastly Academy

@@ -274,13 +274,46 @@ ${urls.join('\n')}
 }
 
 const env = await loadBuildEnv();
-const siteUrl = normalizeUrl(env.VITE_SITE_URL);
-const apiUrl = normalizeUrl(env.VITE_API_URL);
+const vercelProductionUrl =
+  env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : '';
+
+const siteUrl = normalizeUrl(
+  env.VITE_SITE_URL || vercelProductionUrl,
+);
+
+const backendUrl = normalizeUrl(
+  env.BACKEND_URL,
+);
+
+const apiUrl = normalizeUrl(
+  env.SEO_API_URL ||
+    (backendUrl
+      ? `${backendUrl}/api`
+      : env.VITE_API_URL),
+);
+
+const isVercelPreview =
+  Boolean(env.VERCEL_ENV) &&
+  env.VERCEL_ENV !== 'production';
+
 const indexable =
   Boolean(siteUrl) &&
+  !isVercelPreview &&
   !/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(
     siteUrl,
   );
+
+const strictDynamicSeo =
+  env.SEO_STRICT === 'true' ||
+  env.VERCEL_ENV === 'production';
+
+if (strictDynamicSeo && !apiUrl) {
+  throw new Error(
+    '[Bastly SEO] Production build needs BACKEND_URL or SEO_API_URL so published Doctor/Course routes can be discovered.',
+  );
+}
 
 const originalBaseHtml = await fs.readFile(
   baseHtmlPath,
@@ -430,8 +463,15 @@ if (apiUrl) {
       });
     }
   } catch (error) {
+    const message =
+      `[Bastly SEO] Public API was not reachable during build: ${error.message}`;
+
+    if (strictDynamicSeo) {
+      throw new Error(message);
+    }
+
     console.warn(
-      `[Bastly SEO] Public API was not reachable during build. Dynamic doctor/course HTML shells were skipped: ${error.message}`,
+      `${message}. Dynamic doctor/course HTML shells were skipped.`,
     );
   }
 }
@@ -465,20 +505,30 @@ for (const route of uniqueRoutes) {
   await writeRoute(route.path, html);
 }
 
+const privateHtml = createRouteHtml(
+  originalBaseHtml,
+  {
+    title: 'Bastly Academy',
+    description:
+      'Private Bastly account area.',
+    canonical: '',
+    image: '',
+    type: 'website',
+    noIndex: true,
+    schema: null,
+  },
+);
+
+await fs.writeFile(
+  path.join(distDir, 'private.html'),
+  privateHtml,
+  'utf8',
+);
+
 const robots = indexable
   ? `User-agent: *
 Allow: /
-Disallow: /student/
-Disallow: /parent/
-Disallow: /doctor/
-Disallow: /admin/
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /reset-password
-Disallow: /verify-email
-Disallow: /check-email
-Disallow: /invite/
+Disallow: /api/
 
 Sitemap: ${siteUrl}/sitemap.xml
 `
@@ -510,11 +560,11 @@ await fs.writeFile(
 );
 
 console.log(
-  `[Bastly SEO] Generated ${uniqueRoutes.length} route HTML shell(s), robots.txt, and sitemap.xml.`,
+  `[Bastly SEO] Generated ${uniqueRoutes.length} public route HTML shell(s), private.html, robots.txt, and sitemap.xml.`,
 );
 
 if (!indexable) {
   console.warn(
-    '[Bastly SEO] VITE_SITE_URL is missing or local. Build output is intentionally noindex. Set the canonical production URL before launch.',
+    '[Bastly SEO] This build is intentionally noindex because it is local, missing a canonical site URL, or a Vercel preview build.',
   );
 }

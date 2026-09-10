@@ -7,6 +7,8 @@ const requiredInProduction = [
   'CLIENT_URL',
   'MONGODB_URI',
   'JWT_SECRET',
+  'GMAIL_USER',
+  'GMAIL_APP_PASSWORD',
 ];
 
 if (production) {
@@ -28,13 +30,24 @@ function normalizeOrigin(value, fallback) {
     const url = new URL(candidate);
 
     if (!['http:', 'https:'].includes(url.protocol)) {
-      throw new Error('Only http/https origins are supported.');
+      throw new Error(
+        'Only http/https origins are supported.',
+      );
+    }
+
+    if (
+      production &&
+      url.protocol !== 'https:'
+    ) {
+      throw new Error(
+        'CLIENT_URL must use https in production.',
+      );
     }
 
     return url.origin;
-  } catch {
+  } catch (error) {
     throw new Error(
-      `CLIENT_URL must be a valid http/https origin. Received: ${candidate}`,
+      `CLIENT_URL must be a valid http/https origin. Received: ${candidate}. ${error.message}`,
     );
   }
 }
@@ -56,10 +69,26 @@ if (production && jwtSecret.length < 32) {
 
 if (
   production &&
-  jwtSecret.includes('development-only-secret')
+  jwtSecret.includes(
+    'development-only-secret',
+  )
 ) {
   throw new Error(
     'JWT_SECRET is still using the development fallback.',
+  );
+}
+
+const requireEmailVerification =
+  String(
+    process.env.REQUIRE_EMAIL_VERIFICATION,
+  ).toLowerCase() === 'true';
+
+if (
+  production &&
+  !requireEmailVerification
+) {
+  throw new Error(
+    'REQUIRE_EMAIL_VERIFICATION must be true in production.',
   );
 }
 
@@ -77,11 +106,7 @@ export const env = Object.freeze({
     'mongodb://127.0.0.1:27017/bastly',
 
   jwtSecret,
-
-  requireEmailVerification:
-    String(
-      process.env.REQUIRE_EMAIL_VERIFICATION,
-    ).toLowerCase() === 'true',
+  requireEmailVerification,
 
   gmailUser: process.env.GMAIL_USER || '',
   gmailAppPassword:

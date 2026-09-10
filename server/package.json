@@ -7,7 +7,9 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "check": "node --check src/server.js",
-    "seed:admin": "node src/scripts/seedAdmin.js"
+    "seed:admin": "node src/scripts/seedAdmin.js",
+    "check:prod": "node src/scripts/checkProductionConfig.js",
+    "check:email": "node src/scripts/verifyEmailTransport.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
@@ -24,5 +26,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=20.19 <23"
   }
 }
