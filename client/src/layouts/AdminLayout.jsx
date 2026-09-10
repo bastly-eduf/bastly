@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Gift,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -17,6 +18,7 @@ const navigation = [
   { label: 'Doctors', to: '/admin/doctors', icon: UsersRound },
   { label: 'Courses', to: '/admin/courses', icon: BookOpen },
   { label: 'Enrollments', to: '/admin/enrollments', icon: GraduationCap },
+  { label: 'Bastly Cards', to: '/admin/rewards', icon: Gift },
 ];
 
 export default function AdminLayout() {

@@ -1,5 +1,7 @@
 import {
+  BarChart3,
   BookOpen,
+  CalendarCheck,
   LayoutDashboard,
   LogOut,
   Menu,

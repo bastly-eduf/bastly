@@ -7,18 +7,23 @@ import DoctorLayout from '../layouts/DoctorLayout';
 import ParentLayout from '../layouts/ParentLayout';
 import PublicLayout from '../layouts/PublicLayout';
 import StudentLayout from '../layouts/StudentLayout';
+
 import AdminCoursesPage from '../pages/admin/AdminCoursesPage';
 import AdminDoctorsPage from '../pages/admin/AdminDoctorsPage';
 import AdminEnrollmentsPage from '../pages/admin/AdminEnrollmentsPage';
 import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
+import AdminRewardsPage from '../pages/admin/AdminRewardsPage';
+
 import DoctorAssessmentsPage from '../pages/doctor/DoctorAssessmentsPage';
+import DoctorAttendancePage from '../pages/doctor/DoctorAttendancePage';
 import DoctorCourseWorkspacePage from '../pages/doctor/DoctorCourseWorkspacePage';
 import DoctorCoursesPage from '../pages/doctor/DoctorCoursesPage';
 import DoctorOverviewPage from '../pages/doctor/DoctorOverviewPage';
-import DoctorStudentsPage from '../pages/doctor/DoctorStudentsPage';
-import DoctorAttendancePage from '../pages/doctor/DoctorAttendancePage';
 import DoctorPerformancePage from '../pages/doctor/DoctorPerformancePage';
+import DoctorStudentsPage from '../pages/doctor/DoctorStudentsPage';
+
 import ParentOverviewPage from '../pages/parent/ParentOverviewPage';
+
 import CheckEmailPage from '../pages/public/CheckEmailPage';
 import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
 import HomePage from '../pages/public/HomePage';
@@ -29,10 +34,12 @@ import PlaceholderPage from '../pages/public/PlaceholderPage';
 import RegisterPage from '../pages/public/RegisterPage';
 import ResetPasswordPage from '../pages/public/ResetPasswordPage';
 import VerifyEmailPage from '../pages/public/VerifyEmailPage';
+
 import StudentAssessmentPage from '../pages/student/StudentAssessmentPage';
 import StudentAssessmentsPage from '../pages/student/StudentAssessmentsPage';
 import StudentOverviewPage from '../pages/student/StudentOverviewPage';
 import StudentPerformancePage from '../pages/student/StudentPerformancePage';
+import StudentRewardsPage from '../pages/student/StudentRewardsPage';
 
 export default function AppRoutes() {
   return (
@@ -66,6 +73,7 @@ export default function AppRoutes() {
           <Route path="assessments" element={<StudentAssessmentsPage />} />
           <Route path="assessments/:assessmentId" element={<StudentAssessmentPage />} />
           <Route path="performance" element={<StudentPerformancePage />} />
+          <Route path="rewards" element={<StudentRewardsPage />} />
         </Route>
       </Route>
 
@@ -93,6 +101,7 @@ export default function AppRoutes() {
           <Route path="doctors" element={<AdminDoctorsPage />} />
           <Route path="courses" element={<AdminCoursesPage />} />
           <Route path="enrollments" element={<AdminEnrollmentsPage />} />
+          <Route path="rewards" element={<AdminRewardsPage />} />
         </Route>
       </Route>
 

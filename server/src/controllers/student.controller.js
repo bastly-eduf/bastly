@@ -10,6 +10,7 @@ import {
 } from '../services/assessment.service.js';
 import { getStudentAssessmentAccess } from '../services/studentAccess.service.js';
 import { writeAuditLog } from '../services/audit.service.js';
+import { syncStudentSpinCredits } from '../services/reward.service.js';
 import { HttpError } from '../utils/httpError.js';
 
 export async function studentOverview(req, res) {
@@ -166,6 +167,14 @@ export async function submitStudentAssessment(req, res) {
       throw new HttpError(409, 'This attempt was already submitted. Refresh to see the result.');
     }
     throw error;
+  }
+
+  if (assessment.type === 'quiz') {
+    try {
+      await syncStudentSpinCredits(req.user._id);
+    } catch (error) {
+      console.error('Spin credit sync after quiz failed:', error.message);
+    }
   }
 
   await writeAuditLog({

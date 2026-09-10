@@ -387,3 +387,95 @@ New views:
 Assessment creation now stores a `performanceWeekStart`, so a quiz/homework belongs to one explicit performance week instead of relying on submission time.
 
 Next: Step 5E — Bastly Cards reward inventory + spin credit/claim flow, plus Admin performance visibility.
+
+
+## Step 5E — Bastly Cards + Spin & Win
+
+Added the real reward system.
+
+### Locked eligibility rule
+
+A student can earn a maximum of **one Bastly Spin per week across all active courses**.
+
+The spin is earned only when:
+
+- at least one required Quiz exists for that week
+- every required Quiz was submitted
+- every required Quiz earned `Star` (90%+)
+
+Homework and attendance affect Weekly Performance but do **not** affect Spin eligibility.
+
+### Reward flow
+
+```text
+All required weekly quizzes = Star
+            ↓
+       SpinCredit earned
+            ↓
+Student presses "Use Bastly Spin"
+            ↓
+Server locks one SpinCredit
+            ↓
+Server randomly selects + atomically decrements live reward inventory
+            ↓
+RewardAssignment is created
+            ↓
+SpinCredit becomes consumed
+            ↓
+Only now does the client wheel animation reveal the already-decided reward
+```
+
+The browser never decides the prize.
+
+### Inventory
+
+Admin can manage:
+
+- partner name
+- partner logo/image path
+- reward title
+- offer
+- description
+- redemption instructions
+- redemption code
+- expiry date
+- quantity
+- active / paused / expired state
+- restocking
+
+Students cannot see redemption codes or private instructions until they win a card.
+
+### Student rewards
+
+`/student/rewards`
+
+Students can:
+
+- see ready Spin credits
+- spin the visual wheel
+- see won Bastly Cards
+- copy redemption codes
+- see instructions/expiry
+- mark a card as used
+
+### Safety / consistency
+
+- `SpinCredit` is unique by Student + Week, enforcing max 1/week.
+- one Spin can only have one RewardAssignment.
+- a processing lock prevents duplicate clicks from consuming the same Spin twice.
+- stale processing locks self-recover.
+- reward stock is decremented with an atomic conditional update.
+- if assignment creation fails, stock is restored and the Spin is returned.
+- expired inventory and assigned cards are synchronized automatically.
+- Spin eligibility is rechecked immediately before every Spin, so a stale/unqualified credit cannot be used.
+- qualifying Quiz submissions also sync Spin credits immediately.
+
+### Next
+
+Step 6 should begin the remaining full-platform experience rather than another isolated backend feature:
+
+- Student course/lesson learning area
+- Parent deeper child detail pages
+- notifications foundation
+- public dynamic Doctors + Courses pages
+- then PWA / SEO / launch hardening

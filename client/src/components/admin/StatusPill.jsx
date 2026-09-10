@@ -6,6 +6,10 @@ const styles = {
   draft: 'bg-[#eef3f8] text-[#536579]',
   unregistered: 'bg-[#fff0ef] text-[#a83d36]',
   archived: 'bg-[#fff0ef] text-[#a83d36]',
+  paused: 'bg-[#fff6df] text-[#9a6510]',
+  expired: 'bg-[#eef3f8] text-[#536579]',
+  assigned: 'bg-bastly-blue-pale text-bastly-blue-dark',
+  redeemed: 'bg-[#eef8f1] text-[#18764a]',
 };
 
 export default function StatusPill({ value }) {
