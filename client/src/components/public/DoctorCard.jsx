@@ -1,7 +1,9 @@
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function DoctorCard({ doctor }) {
+export default function DoctorCard({ doctor, headingLevel = 'h2' }) {
+  const Heading = headingLevel;
+
   return (
     <article className="group overflow-hidden rounded-[26px] border border-line bg-white shadow-soft transition duration-300 hover:-translate-y-1 hover:border-bastly-blue/25 hover:shadow-card">
       <Link
@@ -31,9 +33,9 @@ export default function DoctorCard({ doctor }) {
       </Link>
 
       <div className="p-5">
-        <h2 className="mb-1.5 font-heading text-[clamp(1.35rem,2vw,1.7rem)] font-bold tracking-[-0.04em] text-bastly-navy">
+        <Heading className="mb-1.5 font-heading text-[clamp(1.35rem,2vw,1.7rem)] font-bold tracking-[-0.04em] text-bastly-navy">
           {doctor.displayName}
-        </h2>
+        </Heading>
 
         <p className="mb-4 min-h-10 text-xs leading-5 text-muted">
           {doctor.levels?.length

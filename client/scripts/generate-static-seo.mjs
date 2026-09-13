@@ -359,18 +359,6 @@ const fixedRoutes = [
     },
   },
   {
-    path: '/about',
-    title:
-      'About Bastly Academy | One Smarter Learning Experience',
-    description:
-      'Learn how Bastly Academy connects lessons, assessments, attendance, parent visibility, weekly performance, and rewards in one student-focused platform.',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'AboutPage',
-      name: 'About Bastly Academy',
-    },
-  },
-  {
     path: '/faq',
     title:
       'Bastly Academy FAQ | Enrollment, Learning & Rewards',
@@ -378,11 +366,26 @@ const fixedRoutes = [
       'Answers about Bastly enrollment, course access, quizzes, homework, attendance, weekly performance, parent accounts, video lessons, and Bastly Spin rewards.',
   },
   {
-    path: '/contact',
-    title:
-      'Contact Bastly Academy | Enrollment & Course Help',
+    path: '/privacy',
+    title: 'Privacy Policy | Bastly Academy',
     description:
-      'Contact Bastly Academy through WhatsApp, phone, or Instagram for course enrollment, prices, group availability, payment, and account support.',
+      'Read how Bastly Academy handles account, academic, parent, security, and service information across the Bastly learning platform.',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Bastly Academy Privacy Policy',
+    },
+  },
+  {
+    path: '/terms',
+    title: 'Terms & Conditions | Bastly Academy',
+    description:
+      'Read the terms for Bastly Academy accounts, enrollment, course access, assessments, learning content, rewards, and platform use.',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Bastly Academy Terms & Conditions',
+    },
   },
 ];
 

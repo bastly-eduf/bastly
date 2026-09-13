@@ -2,7 +2,7 @@ import {
   lazy,
   Suspense,
 } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import PublicOnlyRoute from '../components/auth/PublicOnlyRoute';
@@ -85,14 +85,8 @@ const ParentOverviewPage = lazy(
   () => import('../pages/parent/ParentOverviewPage'),
 );
 
-const AboutPage = lazy(
-  () => import('../pages/public/AboutPage'),
-);
 const CheckEmailPage = lazy(
   () => import('../pages/public/CheckEmailPage'),
-);
-const ContactPage = lazy(
-  () => import('../pages/public/ContactPage'),
 );
 const CoursePage = lazy(
   () => import('../pages/public/CoursePage'),
@@ -122,6 +116,12 @@ const InvitationPage = lazy(
 );
 const LoginPage = lazy(
   () => import('../pages/public/LoginPage'),
+);
+const PrivacyPage = lazy(
+  () => import('../pages/public/PrivacyPage'),
+);
+const TermsPage = lazy(
+  () => import('../pages/public/TermsPage'),
 );
 const NotFoundPage = lazy(
   () => import('../pages/public/NotFoundPage'),
@@ -185,14 +185,22 @@ export default function AppRoutes() {
             path="/doctors/:slug"
             element={<DoctorProfilePage />}
           />
-          <Route
-            path="/about"
-            element={<AboutPage />}
-          />
           <Route path="/faq" element={<FaqPage />} />
           <Route
+            path="/privacy"
+            element={<PrivacyPage />}
+          />
+          <Route
+            path="/terms"
+            element={<TermsPage />}
+          />
+          <Route
+            path="/about"
+            element={<Navigate to="/" replace />}
+          />
+          <Route
             path="/contact"
-            element={<ContactPage />}
+            element={<Navigate to="/" replace />}
           />
         </Route>
 

@@ -4,11 +4,7 @@ import DoctorsPreview from '../../components/home/DoctorsPreview';
 import FinalCta from '../../components/home/FinalCta';
 import HomeFaq from '../../components/home/HomeFaq';
 import HowItWorks from '../../components/home/HowItWorks';
-import ParentPreview from '../../components/home/ParentPreview';
-import PerformancePreview from '../../components/home/PerformancePreview';
 import RewardsPreview from '../../components/home/RewardsPreview';
-import StudentHubPreview from '../../components/home/StudentHubPreview';
-import ValueStrip from '../../components/home/ValueStrip';
 import Seo from '../../components/seo/Seo';
 
 export default function HomePage() {
@@ -24,16 +20,12 @@ export default function HomePage() {
         <Hero />
 
         <div id="homepage-content">
-          <ValueStrip />
           <CoursesPreview />
-          <DoctorsPreview />
           <HowItWorks />
-          <StudentHubPreview />
-          <PerformancePreview />
+          <DoctorsPreview />
           <RewardsPreview />
-          <ParentPreview />
-          <FinalCta />
           <HomeFaq />
+          <FinalCta />
         </div>
       </main>
     </>

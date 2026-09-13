@@ -35,17 +35,6 @@ export default function FaqPage() {
           eyebrow="Frequently asked questions"
           title="The details, without the mystery."
           description="Enrollment, access, learning, grades, parents, attendance, and rewards — here is how Bastly works."
-          aside={
-            <a
-              href={bastlyWhatsAppUrl("Hi Bastly Academy 👋\nI have a question that isn't covered in the FAQ.")}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-bastly-navy no-underline"
-            >
-              <MessageCircle size={18} />
-              Ask on WhatsApp
-            </a>
-          }
         />
 
         <section className="bg-[#f6f9fc] py-14 lg:py-20">

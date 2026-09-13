@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import DoctorCard from '../public/DoctorCard';
+import PreviewCarousel from './PreviewCarousel';
 import { api } from '../../services/api';
 
 export default function DoctorsPreview() {
@@ -12,7 +13,7 @@ export default function DoctorsPreview() {
 
     api
       .get('/public/doctors', {
-        params: { limit: 6 },
+        params: { limit: 9 },
       })
       .then(({ data }) => {
         if (active) setDoctors(data.doctors || []);
@@ -32,7 +33,7 @@ export default function DoctorsPreview() {
       aria-labelledby="doctors-preview-title"
     >
       <div className="mx-auto w-[min(1200px,calc(100%-2rem))] lg:w-[min(1200px,calc(100%-4rem))]">
-        <div className="mb-8 grid items-end gap-4 lg:mb-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-20">
+        <div className="mb-9 grid items-end gap-4 lg:mb-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-20">
           <div>
             <p className="mb-3 text-[0.78rem] font-extrabold uppercase tracking-[0.12em] text-bastly-blue">
               Meet your teachers
@@ -45,46 +46,31 @@ export default function DoctorsPreview() {
             </h2>
           </div>
 
-          <div className="max-w-[650px]">
-            <p className="mb-4 leading-7 text-muted">
-              Bastly brings together instructors across
-              different subjects and levels, each with a
-              dedicated profile and their own course experience.
-            </p>
-
-            <Link
-              to="/doctors"
-              className="group inline-flex items-center gap-2 font-extrabold text-bastly-blue-dark no-underline"
-            >
-              Meet all instructors
-              <span
-                className="transition group-hover:translate-x-1"
-                aria-hidden="true"
-              >
-                →
-              </span>
-            </Link>
-          </div>
+          <p className="mb-0 max-w-[650px] leading-7 text-muted">
+            Bastly brings together instructors across different subjects and levels,
+            each with a dedicated profile and their own course experience.
+          </p>
         </div>
 
         {doctors === null ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
+          <PreviewCarousel label="Loading instructor previews">
+            {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
                 className="aspect-[4/5.5] animate-pulse rounded-[26px] border border-line bg-surface"
               />
             ))}
-          </div>
+          </PreviewCarousel>
         ) : doctors.length ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <PreviewCarousel label="Bastly instructors">
             {doctors.map((doctor) => (
               <DoctorCard
                 doctor={doctor}
+                headingLevel="h3"
                 key={doctor._id}
               />
             ))}
-          </div>
+          </PreviewCarousel>
         ) : (
           <div className="rounded-[26px] border border-line bg-surface px-5 py-10 text-center">
             <p className="mb-1 font-heading text-xl font-bold text-bastly-navy">
@@ -95,6 +81,15 @@ export default function DoctorsPreview() {
             </p>
           </div>
         )}
+
+        <div className="mt-8 flex justify-center lg:mt-10">
+          <Link
+            to="/doctors"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-bastly-blue px-6 font-extrabold text-white no-underline shadow-[0_12px_28px_rgba(35,127,209,0.22)] transition hover:-translate-y-0.5 hover:bg-bastly-blue-dark"
+          >
+            Meet all instructors <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
     </section>
   );

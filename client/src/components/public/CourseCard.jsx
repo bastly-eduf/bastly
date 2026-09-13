@@ -7,7 +7,9 @@ import { Link } from 'react-router-dom';
 
 import { formatCoursePrice } from '../../utils/publicCourse';
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, headingLevel = 'h2' }) {
+  const Heading = headingLevel;
+
   return (
     <article className="group overflow-hidden rounded-[26px] border border-line bg-white shadow-soft transition duration-300 hover:-translate-y-1 hover:border-bastly-blue/25 hover:shadow-card">
       <div className="relative aspect-[4/2.75] overflow-hidden bg-[#061f49]">
@@ -44,9 +46,9 @@ export default function CourseCard({ course }) {
           {course.curriculum || course.academicYear}
         </p>
 
-        <h2 className="mb-2 font-heading text-2xl font-bold tracking-[-0.045em] text-bastly-navy">
+        <Heading className="mb-2 font-heading text-2xl font-bold tracking-[-0.045em] text-bastly-navy">
           {course.title}
-        </h2>
+        </Heading>
 
         <p className="mb-4 text-sm text-muted">
           with{' '}

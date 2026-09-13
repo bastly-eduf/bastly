@@ -21,11 +21,14 @@
 }
 
 :root {
-  --header-height: 88px;
+  --announcement-height: 34px;
+  --nav-height: 88px;
+  --header-height: calc(var(--announcement-height) + var(--nav-height));
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  scroll-padding-top: calc(var(--header-height) + 1rem);
   background: #fff;
 }
 
@@ -81,7 +84,8 @@ div[id] {
 
 @media (max-width: 767px) {
   :root {
-    --header-height: 74px;
+    --announcement-height: 30px;
+    --nav-height: 74px;
   }
 }
 
