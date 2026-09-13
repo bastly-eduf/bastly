@@ -149,9 +149,9 @@ export default function StudentRewardsPage() {
             </span>
           </div>
 
-          <div className="relative mx-auto aspect-square w-full max-w-[470px]">
+          <div className="relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[360px]">
             <div
-              className="absolute inset-0 rounded-full border-[12px] border-bastly-navy shadow-[0_28px_80px_rgba(4,22,50,0.22)] transition-transform duration-[2500ms] ease-[cubic-bezier(.15,.85,.16,1)]"
+              className="absolute inset-0 rounded-full border-[9px] border-bastly-navy shadow-[0_22px_60px_rgba(4,22,50,0.18)] transition-transform duration-[2500ms] ease-[cubic-bezier(.15,.85,.16,1)]"
               style={{
                 transform: `rotate(${rotation}deg)`,
                 background:
@@ -174,7 +174,7 @@ export default function StudentRewardsPage() {
                     }}
                   >
                     <div
-                      className="truncate rounded-full bg-white/90 px-2 py-1 text-[0.58rem] font-extrabold text-bastly-navy shadow-sm sm:text-[0.68rem]"
+                      className="truncate rounded-full bg-white/90 px-2 py-1 text-[0.55rem] font-extrabold text-bastly-navy shadow-sm sm:text-[0.64rem]"
                       style={{
                         transform: 'rotate(0deg)',
                       }}
@@ -185,18 +185,18 @@ export default function StudentRewardsPage() {
                 );
               })}
 
-              <div className="absolute left-1/2 top-1/2 grid size-[28%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[8px] border-white bg-bastly-navy text-center text-white shadow-xl">
+              <div className="absolute left-1/2 top-1/2 grid size-[27%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[6px] border-white bg-bastly-navy text-center text-white shadow-xl">
                 <div>
-                  <Gift className="mx-auto mb-1" size={24} />
-                  <p className="mb-0 text-[0.65rem] font-extrabold uppercase tracking-[0.08em]">
+                  <Gift className="mx-auto mb-1" size={20} />
+                  <p className="mb-0 text-[0.58rem] font-extrabold uppercase tracking-[0.08em]">
                     Bastly
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="absolute left-1/2 top-[-6px] z-20 -translate-x-1/2">
-              <div className="h-0 w-0 border-l-[14px] border-r-[14px] border-t-[30px] border-l-transparent border-r-transparent border-t-bastly-blue drop-shadow-md" />
+            <div className="absolute left-1/2 top-[-5px] z-20 -translate-x-1/2">
+              <div className="h-0 w-0 border-l-[11px] border-r-[11px] border-t-[24px] border-l-transparent border-r-transparent border-t-bastly-blue drop-shadow-md" />
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export default function StudentRewardsPage() {
               !data?.availableSpinCount ||
               !(data?.wheelRewards || []).length
             }
-            className="mt-7 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-bastly-blue px-5 text-base font-extrabold text-white transition hover:bg-bastly-blue-dark disabled:cursor-not-allowed disabled:opacity-45"
+            className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-bastly-blue px-5 text-base font-extrabold text-white transition hover:bg-bastly-blue-dark disabled:cursor-not-allowed disabled:opacity-45"
           >
             <Sparkles size={18} />
             {spinning
@@ -217,7 +217,6 @@ export default function StudentRewardsPage() {
                 ? 'Use Bastly Spin'
                 : 'No spin available yet'}
           </button>
-
           {(data?.availableSpinCount || 0) > 0 &&
             (data?.wheelRewards || []).length === 0 && (
               <p className="mt-3 mb-0 text-center text-xs leading-5 text-muted">
@@ -473,8 +472,16 @@ export default function StudentRewardsPage() {
           ))}
 
           {data && data.assignments?.length === 0 && (
-            <div className="rounded-[24px] border border-line bg-white p-10 text-center text-sm text-muted shadow-soft lg:col-span-2 xl:col-span-3">
-              Your won Bastly Cards will live here.
+            <div className="flex flex-col items-center rounded-[24px] border border-line bg-white p-8 text-center shadow-soft lg:col-span-2 xl:col-span-3">
+              <span className="mb-3 grid size-11 place-items-center rounded-2xl bg-bastly-blue-pale text-bastly-blue">
+                <Gift size={18} aria-hidden="true" />
+              </span>
+              <p className="mb-1 font-heading text-lg font-bold text-bastly-navy">
+                No Bastly Cards yet.
+              </p>
+              <p className="mb-0 max-w-[520px] text-sm leading-6 text-muted">
+                Win an eligible weekly spin and your assigned partner reward will be saved here.
+              </p>
             </div>
           )}
         </div>
@@ -497,7 +504,6 @@ function buildWheelGradient(count) {
 
   const segment = 360 / count;
   const stops = [];
-
   for (let index = 0; index < count; index += 1) {
     const start = index * segment;
     const end = start + segment;

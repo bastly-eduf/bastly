@@ -81,7 +81,7 @@ export default function StudentCoursesPage() {
                 </div>
 
                 <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/10">
-                  <BookOpen size={20} />
+                  <BookOpen size={20} aria-hidden="true" />
                 </span>
               </div>
 
@@ -105,6 +105,7 @@ export default function StudentCoursesPage() {
                   <CheckCircle2
                     size={16}
                     className="text-bastly-blue"
+                    aria-hidden="true"
                   />
                   <p className="mb-0 text-sm font-extrabold text-bastly-navy">
                     {item.progress?.completedLessons || 0} /{' '}
@@ -127,7 +128,7 @@ export default function StudentCoursesPage() {
               </div>
 
               <div className="mb-5 flex items-center gap-2 text-xs text-muted">
-                <CalendarDays size={15} />
+                <CalendarDays size={15} aria-hidden="true" />
                 Access until{' '}
                 {new Date(
                   item.accessEndDate,
@@ -141,20 +142,30 @@ export default function StudentCoursesPage() {
                 {item.progress?.completedLessons
                   ? 'Continue learning'
                   : 'Start course'}
-                <ArrowRight size={16} />
+                <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
           </article>
         ))}
 
         {courses && courses.length === 0 && (
-          <div className="rounded-[26px] border border-line bg-white p-10 text-center shadow-soft lg:col-span-2">
+          <div className="flex flex-col items-center rounded-[26px] border border-line bg-white p-8 text-center shadow-soft sm:p-10 lg:col-span-2">
+            <span className="mb-4 grid size-12 place-items-center rounded-2xl bg-bastly-blue-pale text-bastly-blue">
+              <BookOpen size={20} aria-hidden="true" />
+            </span>
             <p className="mb-2 font-heading text-xl font-bold text-bastly-navy">
               No active courses yet.
             </p>
-            <p className="mb-0 text-sm leading-6 text-muted">
-              Once Bastly confirms your course payment, your learning space will appear here.
+            <p className="mb-5 max-w-[560px] text-sm leading-6 text-muted">
+              Once Bastly confirms your course payment, your learning space will appear here with lessons, resources, and progress.
             </p>
+            <Link
+              to="/courses"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-bastly-blue px-5 text-sm font-extrabold text-white no-underline transition hover:bg-bastly-blue-dark"
+            >
+              Browse Bastly courses
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
           </div>
         )}
       </div>
