@@ -1,5 +1,6 @@
 import { connectDatabase } from '../config/database.js';
-import { initialDoctorCatalog } from '../data/initialCatalog.js';
+import { doctorSourceCatalog as initialDoctorCatalog } from '../data/doctorSourceCatalog.js';
+import { doctorEditorialFields } from '../data/doctorProfileContent.js';
 import Course from '../models/Course.js';
 import DoctorProfile from '../models/DoctorProfile.js';
 import { slugify } from '../utils/slugify.js';
@@ -20,14 +21,16 @@ async function seedDoctor(doctor) {
     return { profile, created: false };
   }
 
+  const editorial = doctorEditorialFields(doctor);
+
   profile = await DoctorProfile.create({
     displayName: doctor.displayName,
     slug: doctor.slug,
     subject: doctor.subject,
     levels: doctor.levels,
-    bio: doctor.bio,
-    qualifications: doctor.qualifications,
-    experience: doctor.experience,
+    bio: editorial.bio,
+    qualifications: editorial.qualifications,
+    experience: editorial.experience,
     imageUrl: doctor.imageUrl,
     isFeatured: doctor.isFeatured,
     isPublished: doctor.isPublished,

@@ -7,7 +7,10 @@ import {
 } from '../controllers/invitation.controller.js';
 import { invitationLimiter } from '../middleware/rateLimiters.js';
 import { validate } from '../middleware/validate.js';
-import { acceptInviteSchema } from '../validators/invitation.validators.js';
+import {
+  acceptInviteSchema,
+  acceptParentInviteSchema,
+} from '../validators/invitation.validators.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
@@ -24,7 +27,7 @@ router.post(
 router.post(
   '/parent/accept',
   invitationLimiter,
-  validate(acceptInviteSchema),
+  validate(acceptParentInviteSchema),
   asyncHandler(acceptParentInvitation),
 );
 

@@ -43,6 +43,20 @@ export const acceptInviteSchema = z
     }
   });
 
+export const acceptParentInviteSchema = z
+  .object({
+    token: z.string().min(20),
+    fullName: z.string().trim().min(2).max(120),
+    email: z.string().trim().toLowerCase().email(),
+    phone: z.string().trim().min(10).max(30),
+    password: strongPassword,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'Passwords do not match.',
+  });
+
 export const forgotPasswordSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
 });

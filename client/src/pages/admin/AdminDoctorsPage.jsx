@@ -21,7 +21,6 @@ const blankForm = {
   displayName: '',
   subject: '',
   levels: '',
-  imageUrl: '',
   bio: '',
   qualifications: '',
   experience: '',
@@ -41,10 +40,6 @@ function editForm(profile) {
     displayName: profile.displayName || '',
     subject: profile.subject || '',
     levels: (profile.levels || []).join(', '),
-    imageUrl:
-      profile.legacyImageUrl ??
-      profile.imageUrl ??
-      '',
     bio: profile.bio || '',
     qualifications: (profile.qualifications || []).join(
       '\n',
@@ -112,7 +107,6 @@ export default function AdminDoctorsPage() {
       displayName: form.displayName,
       subject: form.subject,
       levels: lines(form.levels),
-      imageUrl: form.imageUrl,
       bio: form.bio,
       qualifications: lines(form.qualifications),
       experience: lines(form.experience),
@@ -388,15 +382,6 @@ export default function AdminDoctorsPage() {
             hint="Separate levels with commas."
           />
 
-          <Field
-            label="Legacy/static image path"
-            value={form.imageUrl}
-            onChange={(value) =>
-              setForm({ ...form, imageUrl: value })
-            }
-            placeholder="/doctors/dr-name.webp"
-            hint="Optional fallback for the original bundled portraits. Cloudflare R2 upload takes priority once configured."
-          />
 
           {editingProfile ? (
             <MediaImageUploader
@@ -405,7 +390,7 @@ export default function AdminDoctorsPage() {
               entityId={editingProfile._id}
               slot="portrait"
               label="Doctor portrait"
-              description="Bastly converts JPG/PNG/WebP in the browser into optimized WebP master, profile, card, and thumbnail variants before uploading directly to Cloudflare R2."
+              description="Bastly creates responsive WebP master, profile, card, and thumbnail variants and never enlarges a smaller portrait just to reach a preset size."
               currentUrl={editingProfile.imageUrl || ''}
               onChanged={refreshEditingProfile}
             />

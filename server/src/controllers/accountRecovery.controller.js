@@ -13,13 +13,8 @@ import {
   createOneTimeToken,
   findValidOneTimeToken,
 } from '../services/token.service.js';
-import {
-  sendPasswordResetEmail,
-} from '../services/email.service.js';
-import {
-  createStudentVerification,
-  ensureParentInvitationForStudent,
-} from '../services/invitation.service.js';
+import { sendPasswordResetEmail } from '../services/email.service.js';
+import { createStudentVerification } from '../services/invitation.service.js';
 import { writeAuditLog } from '../services/audit.service.js';
 
 const BCRYPT_ROUNDS = 12;
@@ -39,14 +34,6 @@ export async function verifyEmail(req, res) {
   if (!user.emailVerifiedAt) {
     user.emailVerifiedAt = new Date();
     await user.save();
-  }
-
-  if (user.role === 'student') {
-    try {
-      await ensureParentInvitationForStudent(user._id);
-    } catch (error) {
-      console.error('Parent invitation after verification failed:', error.message);
-    }
   }
 
   const session = signAuthToken(user);
@@ -130,8 +117,6 @@ export async function resetPassword(req, res) {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  // Claim the one-time link atomically after the expensive password hash but
-  // before changing the account. A concurrent replay will fail here.
   await consumeValidOneTimeToken(rawToken, 'password_reset');
 
   user.passwordHash = passwordHash;

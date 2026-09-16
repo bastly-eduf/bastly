@@ -98,17 +98,28 @@ function validateRequestedFiles(
     if (!requested) {
       throw new HttpError(
         400,
-        `Missing ${variant} media variant.`,
+        'Missing ' + variant + ' media variant.',
       );
     }
 
+    const width = Number(requested.width);
+    const height = Number(requested.height);
+    const expectedRatio = expected.width / expected.height;
+    const requestedRatio = width / height;
+
     if (
-      requested.width !== expected.width ||
-      requested.height !== expected.height
+      !Number.isInteger(width) ||
+      !Number.isInteger(height) ||
+      width < 1 ||
+      height < 1 ||
+      width > expected.width ||
+      height > expected.height ||
+      !Number.isFinite(requestedRatio) ||
+      Math.abs(requestedRatio - expectedRatio) > 0.02
     ) {
       throw new HttpError(
         400,
-        `Invalid dimensions for ${variant}.`,
+        'Invalid dimensions for ' + variant + '.',
       );
     }
 
@@ -118,7 +129,7 @@ function validateRequestedFiles(
     ) {
       throw new HttpError(
         400,
-        `${variant} WebP is outside the allowed file size.`,
+        variant + ' WebP is outside the allowed file size.',
       );
     }
 
@@ -131,8 +142,8 @@ function validateRequestedFiles(
 
     return {
       variant,
-      width: expected.width,
-      height: expected.height,
+      width,
+      height,
       bytes: requested.bytes,
       maxBytes: expected.maxBytes,
       contentType: 'image/webp',

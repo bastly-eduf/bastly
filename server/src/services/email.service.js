@@ -121,7 +121,7 @@ export async function sendVerificationEmail({ email, fullName, verificationUrl }
     html: emailShell({
       eyebrow: 'Email verification',
       title: 'One quick check.',
-      body: `Hi ${fullName},<br><br>Verify your email to finish securing your Bastly student account.`,
+      body: `Hi ${fullName},<br><br>Verify your email to finish securing your Bastly account.`,
       buttonLabel: 'Verify my email',
       buttonUrl: verificationUrl,
     }),

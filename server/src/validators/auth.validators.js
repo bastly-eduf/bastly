@@ -23,17 +23,10 @@ export const studentRegistrationSchema = z
     confirmPassword: z.string(),
     school: z.string().trim().min(2).max(160),
     academicLevel: z.string().trim().min(1).max(100),
-    parentName: z.string().trim().min(2).max(120),
-    parentEmail: z.string().trim().toLowerCase().email(),
-    parentPhone: egyptPhone,
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
     message: 'Passwords do not match.',
-  })
-  .refine((data) => data.email !== data.parentEmail, {
-    path: ['parentEmail'],
-    message: 'Parent email must be different from the student email.',
   });
 
 export const loginSchema = z.object({

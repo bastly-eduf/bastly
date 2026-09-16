@@ -2,6 +2,7 @@ import { BookOpen, ClipboardCheck, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import ParentAccessCard from '../../components/student/ParentAccessCard';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
@@ -58,6 +59,8 @@ export default function StudentOverviewPage() {
           }
         />
       </div>
+
+      <ParentAccessCard />
 
       <section className="mt-6 rounded-[26px] border border-line bg-white p-5 shadow-soft sm:p-6">
         <div className="mb-5 flex items-center justify-between gap-4">

@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 
 import { env } from '../config/env.js';
-import ParentRelationship from '../models/ParentRelationship.js';
 import StudentProfile from '../models/StudentProfile.js';
 import User from '../models/User.js';
 import {
@@ -15,14 +14,9 @@ import { sanitizeUser } from '../utils/sanitizeUser.js';
 import { createStudentCode } from '../utils/studentCode.js';
 import { writeAuditLog } from '../services/audit.service.js';
 import { notifyRole } from '../services/notification.service.js';
-import {
-  createParentInvitation,
-  createStudentVerification,
-} from '../services/invitation.service.js';
+import { createStudentVerification } from '../services/invitation.service.js';
 
 const BCRYPT_ROUNDS = 12;
-// Keep unknown-email login attempts on the same expensive bcrypt path as known users.
-// The value is not a credential; it is only timing padding generated once at startup.
 const DUMMY_PASSWORD_HASH = bcrypt.hashSync(
   'bastly-login-timing-padding-not-a-user-password',
   BCRYPT_ROUNDS,
@@ -36,9 +30,6 @@ export async function registerStudent(req, res) {
     password,
     school,
     academicLevel,
-    parentName,
-    parentEmail,
-    parentPhone,
   } = req.validatedBody;
 
   const existing = await User.findOne({ email }).lean();
@@ -64,14 +55,6 @@ export async function registerStudent(req, res) {
       school,
       academicLevel,
       studentCode: createStudentCode(),
-    });
-
-    const relationship = await ParentRelationship.create({
-      student: user._id,
-      invitedName: parentName,
-      invitedEmail: parentEmail,
-      invitedPhone: parentPhone,
-      status: 'pending',
     });
 
     await writeAuditLog({
@@ -105,13 +88,6 @@ export async function registerStudent(req, res) {
       } catch (error) {
         console.error('Student verification email failed:', error.message);
       }
-    } else {
-      try {
-        await createParentInvitation(relationship);
-        emailNotice = 'parent_invitation';
-      } catch (error) {
-        console.error('Parent invitation email failed:', error.message);
-      }
     }
 
     const hydratedUser = await User.findById(user._id).select('+tokenVersion');
@@ -131,14 +107,13 @@ export async function registerStudent(req, res) {
         academicLevel: profile.academicLevel,
         studentCode: profile.studentCode,
       },
-      parentInvitationPending: true,
+      parentLinkAvailable: true,
       emailVerificationRequired: env.requireEmailVerification,
       emailNotice,
     });
   } catch (error) {
     await Promise.allSettled([
       StudentProfile.deleteOne({ user: user._id }),
-      ParentRelationship.deleteMany({ student: user._id }),
       User.deleteOne({ _id: user._id }),
     ]);
 

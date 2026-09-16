@@ -17,7 +17,6 @@ export const createDoctorProfileSchema = z.object({
     .max(30)
     .optional()
     .default([]),
-  imageUrl: z.string().trim().max(1000).optional().default(''),
   isFeatured: z.boolean().optional().default(false),
   isPublished: z.boolean().optional().default(true),
 });

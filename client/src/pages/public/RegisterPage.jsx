@@ -26,17 +26,10 @@ const schema = z
     academicLevel: z.string().trim().min(1, 'Enter your current level.'),
     password: passwordRule,
     confirmPassword: z.string(),
-    parentName: z.string().trim().min(2, 'Enter your parent/guardian name.'),
-    parentEmail: z.string().trim().email('Enter a valid parent email address.'),
-    parentPhone: z.string().trim().min(10, 'Enter a valid parent phone number.'),
   })
   .refine((values) => values.password === values.confirmPassword, {
     path: ['confirmPassword'],
     message: 'Passwords do not match.',
-  })
-  .refine((values) => values.email !== values.parentEmail, {
-    path: ['parentEmail'],
-    message: 'Use a different email for the parent/guardian.',
   });
 
 export default function RegisterPage() {
@@ -59,9 +52,6 @@ export default function RegisterPage() {
       academicLevel: '',
       password: '',
       confirmPassword: '',
-      parentName: '',
-      parentEmail: '',
-      parentPhone: '',
     },
   });
 
@@ -100,7 +90,7 @@ export default function RegisterPage() {
       <AuthShell
         eyebrow="Student registration"
         title="Create your Bastly account."
-        description="We only ask for the information Bastly needs to identify your academic level and securely connect your parent or guardian."
+        description="Start with your own student details. Once you are inside Bastly, you can create a private link for your parent or guardian to enter their own information and connect securely."
         footer={
           <p className="mb-0">
             Already registered?{' '}
@@ -134,24 +124,9 @@ export default function RegisterPage() {
             </div>
           </fieldset>
 
-          <fieldset className="grid gap-4 border-t border-line pt-6">
-            <legend className="mb-3 font-heading text-lg font-bold text-bastly-navy">
-              Parent / guardian
-            </legend>
-
-            <FormField label="Parent / guardian full name" name="parentName" autoComplete="off" register={register} error={errors.parentName?.message} />
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Parent email" name="parentEmail" type="email" autoComplete="off" register={register} error={errors.parentEmail?.message} />
-              <FormField label="Parent phone" name="parentPhone" type="tel" autoComplete="off" register={register} error={errors.parentPhone?.message} />
-            </div>
-
-            <p className="mb-0 rounded-2xl bg-bastly-blue-pale px-4 py-3 text-xs leading-6 text-muted">
-              The parent invitation uses a secure one-time link. If that email already
-              has a Bastly parent account, this student will be linked to it instead of
-              creating a duplicate account.
-            </p>
-          </fieldset>
+          <p className="mb-0 rounded-2xl bg-bastly-blue-pale px-4 py-3 text-xs leading-6 text-muted">
+            Parent details are not needed during signup. After you enter your Student dashboard, Bastly can create a private one-time Parent invitation link for you to share.
+          </p>
 
           {serverError && (
             <div className="rounded-2xl border border-[#d1605a]/25 bg-[#fff0ef] px-4 py-3 text-sm font-bold text-[#a83d36]">

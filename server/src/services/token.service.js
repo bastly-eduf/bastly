@@ -36,11 +36,19 @@ export async function createOneTimeToken({
 }) {
   const normalizedEmail = targetEmail.trim().toLowerCase();
 
-  await AuthToken.deleteMany({
-    type,
-    targetEmail: normalizedEmail,
-    usedAt: null,
-  });
+  const staleTokenQuery = user
+    ? {
+        type,
+        user,
+        usedAt: null,
+      }
+    : {
+        type,
+        targetEmail: normalizedEmail,
+        usedAt: null,
+      };
+
+  await AuthToken.deleteMany(staleTokenQuery);
 
   const rawToken = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(rawToken);
@@ -58,9 +66,7 @@ export async function createOneTimeToken({
 }
 
 export async function findValidOneTimeToken(rawToken, type) {
-  const record = await AuthToken.findOne(
-    validTokenQuery(rawToken, type),
-  );
+  const record = await AuthToken.findOne(validTokenQuery(rawToken, type));
 
   if (!record) {
     throw invalidTokenError();
@@ -69,8 +75,6 @@ export async function findValidOneTimeToken(rawToken, type) {
   return record;
 }
 
-// State-changing token flows claim the token atomically before mutating account data.
-// Only one concurrent request can move a still-valid token from unused to used.
 export async function consumeValidOneTimeToken(rawToken, type) {
   const now = new Date();
   const record = await AuthToken.findOneAndUpdate(

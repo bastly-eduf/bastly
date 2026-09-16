@@ -54,6 +54,14 @@ export default function DoctorProfilePage() {
   }, [slug]);
 
   const doctor = data?.doctor;
+  const hasLevels = Boolean(doctor?.levels?.length);
+  const hasQualifications = Boolean(doctor?.qualifications?.length);
+  const hasExperience = Boolean(doctor?.experience?.length);
+  const profilePanelCount = [
+    hasLevels,
+    hasQualifications,
+    hasExperience,
+  ].filter(Boolean).length;
 
   const schema = useMemo(() => {
     if (!doctor) return null;
@@ -207,27 +215,31 @@ export default function DoctorProfilePage() {
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <ProfilePanel
-                icon={GraduationCap}
-                title="Levels"
-                items={doctor?.levels}
-                empty="Levels will be added soon."
-              />
-              <ProfilePanel
-                icon={Award}
-                title="Qualifications"
-                items={doctor?.qualifications}
-                empty="Qualifications will be added soon."
-              />
-              <ProfilePanel
-                icon={BriefcaseBusiness}
-                title="Experience"
-                items={doctor?.experience}
-                empty="Experience highlights will be added soon."
-                wide
-              />
-            </div>
+            {profilePanelCount > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <ProfilePanel
+                  icon={GraduationCap}
+                  title="Levels"
+                  items={doctor?.levels}
+                  wide={profilePanelCount === 1}
+                />
+                <ProfilePanel
+                  icon={Award}
+                  title="Qualifications"
+                  items={doctor?.qualifications}
+                  wide={profilePanelCount === 1}
+                />
+                <ProfilePanel
+                  icon={BriefcaseBusiness}
+                  title="Experience"
+                  items={doctor?.experience}
+                  wide={
+                    profilePanelCount === 1 ||
+                    profilePanelCount === 3
+                  }
+                />
+              </div>
+            )}
           </div>
         </section>
 
@@ -287,9 +299,10 @@ function ProfilePanel({
   icon: Icon,
   title,
   items = [],
-  empty,
   wide = false,
 }) {
+  if (!items?.length) return null;
+
   return (
     <div
       className={[
@@ -305,21 +318,17 @@ function ProfilePanel({
         {title}
       </h3>
 
-      {items?.length ? (
-        <ul className="m-0 grid gap-2 p-0 text-sm leading-6 text-muted">
-          {items.map((item) => (
-            <li
-              className="flex items-start gap-2"
-              key={item}
-            >
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-bastly-blue" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mb-0 text-sm text-muted">{empty}</p>
-      )}
+      <ul className="m-0 grid gap-2 p-0 text-sm leading-6 text-muted">
+        {items.map((item) => (
+          <li
+            className="flex items-start gap-2"
+            key={item}
+          >
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-bastly-blue" />
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
