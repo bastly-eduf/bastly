@@ -61,7 +61,7 @@ export default function PreviewCarousel({ children, label }) {
   if (!items.length) return null;
 
   return (
-    <div className="relative">
+    <div>
       <div
         id={carouselId}
         ref={railRef}
@@ -83,27 +83,29 @@ export default function PreviewCarousel({ children, label }) {
         ))}
       </div>
 
-      <button
-        type="button"
-        aria-label={`Previous ${label}`}
-        aria-controls={carouselId}
-        disabled={!canScrollBack}
-        onClick={() => scroll(-1)}
-        className="absolute left-2 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-line bg-white/95 text-bastly-navy shadow-card backdrop-blur transition hover:-translate-y-[calc(50%+2px)] hover:bg-bastly-blue-soft disabled:pointer-events-none disabled:opacity-30 lg:-left-5"
-      >
-        <ChevronLeft size={20} aria-hidden="true" />
-      </button>
+      <div className="mt-6 flex items-center justify-between gap-4">
+        <button
+          type="button"
+          aria-label={`Previous ${label}`}
+          aria-controls={carouselId}
+          disabled={!canScrollBack}
+          onClick={() => scroll(-1)}
+          className="grid size-11 place-items-center rounded-full border border-line bg-white text-bastly-navy shadow-soft transition hover:-translate-y-0.5 hover:border-bastly-blue/30 hover:bg-bastly-blue-soft disabled:pointer-events-none disabled:opacity-30"
+        >
+          <ChevronLeft size={20} aria-hidden="true" />
+        </button>
 
-      <button
-        type="button"
-        aria-label={`Next ${label}`}
-        aria-controls={carouselId}
-        disabled={!canScrollForward}
-        onClick={() => scroll(1)}
-        className="absolute right-2 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-line bg-white/95 text-bastly-navy shadow-card backdrop-blur transition hover:-translate-y-[calc(50%+2px)] hover:bg-bastly-blue-soft disabled:pointer-events-none disabled:opacity-30 lg:-right-5"
-      >
-        <ChevronRight size={20} aria-hidden="true" />
-      </button>
+        <button
+          type="button"
+          aria-label={`Next ${label}`}
+          aria-controls={carouselId}
+          disabled={!canScrollForward}
+          onClick={() => scroll(1)}
+          className="grid size-11 place-items-center rounded-full border border-line bg-white text-bastly-navy shadow-soft transition hover:-translate-y-0.5 hover:border-bastly-blue/30 hover:bg-bastly-blue-soft disabled:pointer-events-none disabled:opacity-30"
+        >
+          <ChevronRight size={20} aria-hidden="true" />
+        </button>
+      </div>
     </div>
   );
 }

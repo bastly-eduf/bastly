@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
 
+import { roleHome, useAuth } from '../../context/AuthContext';
+
 export default function Hero() {
+  const { user } = useAuth();
+  const accountPath = roleHome[user?.role] || '/';
+
   return (
     <section
       className="relative isolate flex min-h-svh overflow-hidden bg-bastly-navy text-white"
@@ -24,7 +29,7 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      <div className="mx-auto flex min-h-svh w-[min(1200px,calc(100%-2rem))] items-start pt-[clamp(11.5rem,24svh,14.25rem)] pb-32 md:w-[min(1200px,calc(100%-4rem))] md:items-center md:pt-[calc(var(--header-height)+2.5rem)] md:pb-20">
+      <div className="mx-auto flex min-h-svh w-[min(1200px,calc(100%-2rem))] items-start pt-[clamp(13.5rem,28svh,16rem)] pb-24 md:w-[min(1200px,calc(100%-4rem))] md:items-center md:pt-[calc(var(--header-height)+2.5rem)] md:pb-20">
         <div className="hero-enter w-full max-w-[650px] md:ml-[12vw] md:w-[70vw] lg:ml-[20vw] lg:w-[62vw] xl:ml-[25vw] xl:w-[55vw]">
           <h1
             id="hero-title"
@@ -36,7 +41,7 @@ export default function Hero() {
 
           <p className="mb-8 max-w-[610px] text-base leading-[1.72] text-white/85 md:mb-9 md:text-[clamp(1rem,1.45vw,1.18rem)] md:leading-[1.82]">
             Learn with expert instructors, tackle quizzes and homework, track your
-            progress, and unlock Bastly rewards — all in one place.
+            progress, and unlock Bastly rewards. all in one place.
           </p>
 
           <div className="grid gap-4 min-[521px]:flex min-[521px]:flex-wrap">
@@ -56,12 +61,12 @@ export default function Hero() {
           </div>
 
           <p className="mt-5 mb-0 text-sm text-white/65">
-            Already studying with Bastly?{' '}
+            {user ? 'Already signed in? ' : 'Already studying with Bastly? '}
             <Link
-              to="/login"
+              to={user ? accountPath : '/login'}
               className="font-extrabold text-white underline decoration-white/50 underline-offset-4"
             >
-              Log in
+              {user ? 'Open your account' : 'Log in'}
             </Link>
           </p>
         </div>
@@ -72,7 +77,8 @@ export default function Hero() {
         aria-label="Explore Bastly"
         className="absolute right-4 bottom-6 hidden items-center gap-3 text-[0.76rem] font-bold uppercase tracking-[0.1em] text-white/70 no-underline md:flex lg:right-8"
       >
-        
+        <span>Explore</span>
+        <span className="h-px w-10 bg-white/50" aria-hidden="true" />
       </a>
     </section>
   );

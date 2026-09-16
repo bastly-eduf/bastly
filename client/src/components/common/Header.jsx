@@ -1,5 +1,8 @@
+import { CircleUserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+
+import { roleHome, useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -10,6 +13,7 @@ const navItems = [
 
 export default function Header() {
   const location = useLocation();
+  const { user, loading } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
@@ -17,6 +21,7 @@ export default function Header() {
 
   const isHome = location.pathname === '/';
   const solid = !isHome || scrolled || menuOpen;
+  const accountPath = roleHome[user?.role] || '/';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -112,24 +117,50 @@ export default function Header() {
             {navItems.map(desktopNavItem)}
           </nav>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              to="/login"
-              className={[
-                'inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-extrabold transition hover:-translate-y-0.5',
-                solid
-                  ? 'border-line bg-white text-bastly-navy hover:border-bastly-blue/30'
-                  : 'border-white/40 bg-bastly-navy/15 text-white',
-              ].join(' ')}
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex min-h-10 items-center justify-center rounded-full bg-bastly-blue px-4 text-sm font-extrabold text-white shadow-[0_8px_22px_rgba(35,127,209,0.22)] transition hover:-translate-y-0.5 hover:bg-bastly-blue-dark"
-            >
-              Join Bastly
-            </Link>
+          <div className="hidden min-w-[110px] items-center justify-end gap-3 lg:flex">
+            {loading ? (
+              <span
+                className={[
+                  'h-10 w-[108px] rounded-full',
+                  solid ? 'bg-surface' : 'bg-white/10',
+                ].join(' ')}
+                aria-hidden="true"
+              />
+            ) : user ? (
+              <Link
+                to={accountPath}
+                className={[
+                  'inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-4 text-sm font-extrabold transition hover:-translate-y-0.5',
+                  solid
+                    ? 'border-line bg-white text-bastly-navy hover:border-bastly-blue/30'
+                    : 'border-white/40 bg-bastly-navy/15 text-white',
+                ].join(' ')}
+                aria-label="Open your Bastly account"
+              >
+                <CircleUserRound size={17} aria-hidden="true" />
+                Account
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className={[
+                    'inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-extrabold transition hover:-translate-y-0.5',
+                    solid
+                      ? 'border-line bg-white text-bastly-navy hover:border-bastly-blue/30'
+                      : 'border-white/40 bg-bastly-navy/15 text-white',
+                  ].join(' ')}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-bastly-blue px-4 text-sm font-extrabold text-white shadow-[0_8px_22px_rgba(35,127,209,0.22)] transition hover:-translate-y-0.5 hover:bg-bastly-blue-dark"
+                >
+                  Join Bastly
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -200,21 +231,36 @@ export default function Header() {
             ))}
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-3">
-            <Link
-              to="/login"
-              onClick={closeMobileMenu}
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-line font-extrabold text-bastly-navy"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              onClick={closeMobileMenu}
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-bastly-blue font-extrabold text-white"
-            >
-              Join Bastly
-            </Link>
+          <div className="mt-8">
+            {loading ? (
+              <span className="block h-12 w-full rounded-full bg-surface" aria-hidden="true" />
+            ) : user ? (
+              <Link
+                to={accountPath}
+                onClick={closeMobileMenu}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-bastly-blue font-extrabold text-white"
+              >
+                <CircleUserRound size={18} aria-hidden="true" />
+                My account
+              </Link>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-line font-extrabold text-bastly-navy"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-bastly-blue font-extrabold text-white"
+                >
+                  Join Bastly
+                </Link>
+              </div>
+            )}
           </div>
 
           <p className="mt-auto max-w-[340px] pt-8 leading-7 text-muted">

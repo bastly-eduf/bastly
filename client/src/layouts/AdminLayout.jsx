@@ -2,6 +2,7 @@ import {
   BookOpen,
   Gift,
   GraduationCap,
+  House,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -10,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import NotificationBell from '../components/notifications/NotificationBell';
 import Seo from '../components/seo/Seo';
@@ -52,7 +53,11 @@ export default function AdminLayout() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center overflow-hidden rounded-2xl bg-white">
-              <img src="/brand/bastly-logo.webp" alt="Bastly Academy" className="size-full object-contain" />
+              <img
+                src="/brand/bastly-logo.webp"
+                alt="Bastly Academy"
+                className="size-full object-contain"
+              />
             </span>
             <div>
               <p className="mb-0 font-heading text-sm font-bold">Bastly Admin</p>
@@ -127,6 +132,15 @@ export default function AdminLayout() {
           >
             <Menu size={19} />
           </button>
+
+          <Link
+            to="/"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-line bg-white px-3 text-sm font-extrabold text-bastly-navy no-underline transition hover:border-bastly-blue/30 hover:text-bastly-blue-dark"
+            aria-label="Go to Bastly homepage"
+          >
+            <House size={17} aria-hidden="true" />
+            <span className="hidden sm:inline">Go home</span>
+          </Link>
 
           <div className="ml-auto flex items-center gap-2">
             <NotificationBell />

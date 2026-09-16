@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "check": "node --check src/server.js",
     "seed:admin": "node src/scripts/seedAdmin.js",
+    "seed:catalog": "node src/scripts/seedCatalog.js",
     "check:prod": "node src/scripts/checkProductionConfig.js",
     "check:email": "node src/scripts/verifyEmailTransport.js",
     "check:r2": "node src/scripts/verifyR2.js",

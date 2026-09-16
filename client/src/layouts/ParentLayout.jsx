@@ -1,4 +1,5 @@
 import {
+  House,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import {
+  Link,
   NavLink,
   Outlet,
   useNavigate,
@@ -156,11 +158,20 @@ export default function ParentLayout() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="grid size-10 place-items-center rounded-xl border border-line text-bastly-navy lg:hidden"
+            className="mr-3 grid size-10 place-items-center rounded-xl border border-line text-bastly-navy lg:hidden"
             aria-label="Open parent navigation"
           >
             <Menu size={19} />
           </button>
+
+          <Link
+            to="/"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-line bg-white px-3 text-sm font-extrabold text-bastly-navy no-underline transition hover:border-bastly-blue/30 hover:text-bastly-blue-dark"
+            aria-label="Go to Bastly homepage"
+          >
+            <House size={17} aria-hidden="true" />
+            <span className="hidden sm:inline">Go home</span>
+          </Link>
 
           <div className="ml-auto flex items-center gap-2">
             <NotificationBell />

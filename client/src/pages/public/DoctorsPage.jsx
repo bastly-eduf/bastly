@@ -1,11 +1,14 @@
 import { Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
+import DirectoryPagination from '../../components/public/DirectoryPagination';
 import DoctorCard from '../../components/public/DoctorCard';
 import PublicEmptyState from '../../components/public/PublicEmptyState';
 import PublicPageHero from '../../components/public/PublicPageHero';
 import Seo from '../../components/seo/Seo';
 import { api, apiErrorMessage } from '../../services/api';
+
+const PAGE_SIZE = 9;
 
 export default function DoctorsPage() {
   const [data, setData] = useState({
@@ -14,8 +17,10 @@ export default function DoctorsPage() {
   });
   const [query, setQuery] = useState('');
   const [subject, setSubject] = useState('');
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const resultsRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -65,6 +70,44 @@ export default function DoctorsPage() {
       return matchesQuery && matchesSubject;
     });
   }, [data.doctors, query, subject]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(doctors.length / PAGE_SIZE),
+  );
+
+  const visibleDoctors = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return doctors.slice(start, start + PAGE_SIZE);
+  }, [doctors, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, subject]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const changePage = (nextPage) => {
+    const safePage = Math.min(Math.max(nextPage, 1), totalPages);
+    if (safePage === page) return;
+
+    setPage(safePage);
+
+    window.requestAnimationFrame(() => {
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
+
+      resultsRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  };
 
   return (
     <>
@@ -138,31 +181,60 @@ export default function DoctorsPage() {
               </div>
             )}
 
-            {loading ? (
-              <LoadingGrid />
-            ) : doctors.length ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {doctors.map((doctor) => (
-                  <DoctorCard
-                    doctor={doctor}
-                    key={doctor._id}
+            <div
+              ref={resultsRef}
+              className="scroll-mt-[calc(var(--header-height)+1.5rem)]"
+            >
+              {loading ? (
+                <LoadingGrid />
+              ) : doctors.length ? (
+                <>
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <p className="mb-0 text-sm text-muted">
+                      Showing{' '}
+                      <span className="font-bold text-bastly-navy">
+                        {(page - 1) * PAGE_SIZE + 1}–
+                        {Math.min(page * PAGE_SIZE, doctors.length)}
+                      </span>{' '}
+                      of{' '}
+                      <span className="font-bold text-bastly-navy">
+                        {doctors.length}
+                      </span>{' '}
+                      instructors
+                    </p>
+                  </div>
+
+                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    {visibleDoctors.map((doctor) => (
+                      <DoctorCard
+                        doctor={doctor}
+                        key={doctor._id}
+                      />
+                    ))}
+                  </div>
+
+                  <DirectoryPagination
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={changePage}
+                    label="instructors"
                   />
-                ))}
-              </div>
-            ) : (
-              <PublicEmptyState
-                title={
-                  data.doctors.length
-                    ? 'No instructors match those filters.'
-                    : 'Instructor profiles are being prepared.'
-                }
-                description={
-                  data.doctors.length
-                    ? 'Try another subject or clear your search.'
-                    : 'Published Bastly instructor profiles will appear here as the academy team is added.'
-                }
-              />
-            )}
+                </>
+              ) : (
+                <PublicEmptyState
+                  title={
+                    data.doctors.length
+                      ? 'No instructors match those filters.'
+                      : 'Instructor profiles are being prepared.'
+                  }
+                  description={
+                    data.doctors.length
+                      ? 'Try another subject or clear your search.'
+                      : 'Published Bastly instructor profiles will appear here as the academy team is added.'
+                  }
+                />
+              )}
+            </div>
           </div>
         </section>
       </main>
@@ -172,8 +244,8 @@ export default function DoctorsPage() {
 
 function LoadingGrid() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: 8 }).map((_, index) => (
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 9 }).map((_, index) => (
         <div
           key={index}
           className="aspect-[4/5.6] animate-pulse rounded-[26px] border border-line bg-white shadow-soft"

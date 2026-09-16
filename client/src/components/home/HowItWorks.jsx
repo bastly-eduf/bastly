@@ -160,7 +160,7 @@ export default function HowItWorks() {
             id={`how-it-works-panel-${activeStep}`}
             role="tabpanel"
             aria-labelledby={`how-it-works-tab-${activeStep}`}
-            className="flex h-[330px] flex-col rounded-[24px] border border-white/10 bg-[#041838]/72 p-5 min-[380px]:h-[310px] sm:h-[285px] sm:p-6 md:h-[260px] md:p-7"
+            className="flex h-[330px] flex-col rounded-[24px] border border-white/10 bg-[#041838]/72 p-5 min-[380px]:h-[310px] sm:h-[285px] sm:p-6 md:h-[300px] md:p-7 lg:h-[285px]"
           >
             <div className="max-w-[680px]">
               <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.12em] text-[#80c7ff]">

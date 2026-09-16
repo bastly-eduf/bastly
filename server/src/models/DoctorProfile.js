@@ -9,7 +9,6 @@ const doctorProfileSchema = new mongoose.Schema(
       ref: 'User',
       unique: true,
       sparse: true,
-      default: null,
       index: true,
     },
     displayName: {

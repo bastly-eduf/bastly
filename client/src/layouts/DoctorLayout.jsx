@@ -2,6 +2,7 @@ import {
   BarChart3,
   BookOpen,
   CalendarCheck,
+  House,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -10,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import NotificationBell from '../components/notifications/NotificationBell';
 import Seo from '../components/seo/Seo';
@@ -136,6 +137,15 @@ export default function DoctorLayout() {
           >
             <Menu size={19} />
           </button>
+
+          <Link
+            to="/"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-line bg-white px-3 text-sm font-extrabold text-bastly-navy no-underline transition hover:border-bastly-blue/30 hover:text-bastly-blue-dark"
+            aria-label="Go to Bastly homepage"
+          >
+            <House size={17} aria-hidden="true" />
+            <span className="hidden sm:inline">Go home</span>
+          </Link>
 
           <div className="ml-auto flex items-center gap-2">
             <NotificationBell />
