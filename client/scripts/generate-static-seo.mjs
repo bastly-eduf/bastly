@@ -274,14 +274,10 @@ ${urls.join('\n')}
 }
 
 const env = await loadBuildEnv();
-const vercelProductionUrl =
-  env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : '';
+const forceProduction = process.argv.includes('--production');
+const production = forceProduction;
 
-const siteUrl = normalizeUrl(
-  env.VITE_SITE_URL || vercelProductionUrl,
-);
+const siteUrl = normalizeUrl(env.VITE_SITE_URL);
 
 const backendUrl = normalizeUrl(
   env.BACKEND_URL,
@@ -294,20 +290,15 @@ const apiUrl = normalizeUrl(
       : env.VITE_API_URL),
 );
 
-const isVercelPreview =
-  Boolean(env.VERCEL_ENV) &&
-  env.VERCEL_ENV !== 'production';
-
 const indexable =
   Boolean(siteUrl) &&
-  !isVercelPreview &&
   !/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(
     siteUrl,
   );
 
 const strictDynamicSeo =
   env.SEO_STRICT === 'true' ||
-  env.VERCEL_ENV === 'production';
+  production;
 
 if (strictDynamicSeo && !apiUrl) {
   throw new Error(
@@ -533,6 +524,26 @@ await fs.writeFile(
   'utf8',
 );
 
+const notFoundHtml = createRouteHtml(
+  originalBaseHtml,
+  {
+    title: 'Page Not Found | Bastly Academy',
+    description:
+      'The Bastly Academy page you requested could not be found.',
+    canonical: '',
+    image: '',
+    type: 'website',
+    noIndex: true,
+    schema: null,
+  },
+);
+
+await fs.writeFile(
+  path.join(distDir, '404.html'),
+  notFoundHtml,
+  'utf8',
+);
+
 const robots = indexable
   ? `User-agent: *
 Allow: /
@@ -568,11 +579,11 @@ await fs.writeFile(
 );
 
 console.log(
-  `[Bastly SEO] Generated ${uniqueRoutes.length} public route HTML shell(s), private.html, robots.txt, and sitemap.xml.`,
+  `[Bastly SEO] Generated ${uniqueRoutes.length} public route HTML shell(s), private.html, 404.html, robots.txt, and sitemap.xml.`,
 );
 
 if (!indexable) {
   console.warn(
-    '[Bastly SEO] This build is intentionally noindex because it is local, missing a canonical site URL, or a Vercel preview build.',
+    '[Bastly SEO] This build is intentionally noindex because it is local or missing a canonical site URL.',
   );
 }

@@ -50,7 +50,7 @@ async function loadBuildEnv() {
 
 const env = await loadBuildEnv();
 const forceProduction = process.argv.includes('--production');
-const production = forceProduction || env.VERCEL_ENV === 'production';
+const production = forceProduction;
 const errors = [];
 const warnings = [];
 
@@ -159,21 +159,9 @@ if (production) {
   if (explicitSiteUrl) {
     validateHttpsOrigin('VITE_SITE_URL', explicitSiteUrl, true);
   } else {
-    const vercelProductionUrl = clean('VERCEL_PROJECT_PRODUCTION_URL');
-    if (!vercelProductionUrl) {
-      errors.push(
-        'Set VITE_SITE_URL, or run inside Vercel where VERCEL_PROJECT_PRODUCTION_URL is available.',
-      );
-    } else {
-      validateHttpsOrigin(
-        'VERCEL_PROJECT_PRODUCTION_URL',
-        `https://${vercelProductionUrl}`,
-        true,
-      );
-      warnings.push(
-        'VITE_SITE_URL is not set; SEO canonicals will use the Vercel production URL until the final Bastly domain is configured.',
-      );
-    }
+    errors.push(
+      'VITE_SITE_URL is required for a production build so SEO canonicals use the final Bastly frontend origin.',
+    );
   }
 
   validatePublicBusinessConfig();

@@ -34,33 +34,78 @@ replayable.
 
 ## Browser write protection
 
-State-changing `/api` requests use the exact-Origin guard in production. GET/HEAD/OPTIONS are safe
-methods and do not require the Origin check. This is an Origin-based CSRF mitigation, not a
-CSRF-token implementation.
+State-changing `/api` requests use the exact-Origin guard in production.
 
-The production session cookie is also SameSite=Lax. Keep browser API calls same-origin through the
-Vercel `/api` proxy as planned.
+GET/HEAD/OPTIONS are safe methods and do not require the Origin check.
+
+This is an Origin-based CSRF mitigation, not a CSRF-token implementation.
+
+The production session cookie is also SameSite=Lax.
+
+Keep browser API calls same-origin through the Cloudflare Worker `/api` proxy.
+
+The browser request path remains:
+
+```text
+https://FINAL_FRONTEND_ORIGIN/api/*
+```
+
+while the Worker forwards upstream to Render.
+
+Do not make the browser call the Render origin directly.
+
+## Cloudflare frontend boundary
+
+The Cloudflare Worker is the frontend reverse-proxy boundary for `/api/*`.
+
+The Worker:
+
+- preserves the browser request Origin
+- forwards `/api/*` to Render using server-side `BACKEND_URL`
+- returns upstream response headers, including session cookies
+- forces `Cache-Control: private, no-store, max-age=0` on API responses
+- applies the frontend security headers to Worker-generated/proxied responses
+- does not expose `BACKEND_URL` as a Vite/browser variable
+
+Private/auth SPA routes use `private.html` and return:
+
+```text
+Cache-Control: private, no-store, max-age=0
+X-Robots-Tag: noindex, nofollow
+```
+
+Unknown HTML navigations use the same private noindex shell so React can render the SPA Not Found
+page without serving the indexable homepage shell.
+
+Missing static assets still return a real `404`.
 
 ## Authorization and isolation
 
 Routes are role protected server-side. UI route protection is never treated as authorization.
 
 Doctor course/module/lesson actions resolve ownership through the linked DoctorProfile before
-access. Student assessment/lesson access requires an active paid Enrollment that has not expired.
-Parent insight routes require an active ParentRelationship for the requested student. Admin media
-routes require the Admin role and generate their own allowed R2 object keys.
+access.
+
+Student assessment/lesson access requires an active paid Enrollment that has not expired.
+
+Parent insight routes require an active ParentRelationship for the requested student.
+
+Admin media routes require the Admin role and generate their own allowed R2 object keys.
 
 Re-check these rules in production QA with IDs copied from another test account; a 403/404 must be
 returned instead of another person's data.
 
 ## One-attempt quizzes and rewards
 
-Quiz attempts have a unique `(assessment, student, attemptNumber)` index. The existing attempt check
-provides a friendly error, while the unique index is the final concurrency guard for attempt 1.
+Quiz attempts have a unique `(assessment, student, attemptNumber)` index.
+
+The existing attempt check provides a friendly error, while the unique index is the final
+concurrency guard for attempt 1.
 
 Spin credits have the existing unique weekly student ledger and atomic reward inventory behavior.
-Step 7D additionally makes Bastly Card redemption a conditional `assigned -> redeemed` update so a
-double request cannot independently redeem the same assignment twice.
+
+Bastly Card redemption uses a conditional `assigned -> redeemed` update so a double request cannot
+independently redeem the same assignment twice.
 
 ## Abuse limits
 
@@ -68,16 +113,24 @@ Bastly uses separate IP-based limits for login, registration, recovery, invitati
 account actions, assessment submission, R2 media mutations, spin requests, and reward actions, plus
 a broad API limit.
 
-The current limiter store is process memory. That matches the planned single Render web service.
+The current limiter store is process memory.
+
+That matches the planned single Render web service.
+
 If more than one API instance is introduced, configure a shared rate-limit store before assuming a
 limit applies globally.
 
 Rate limiting is defense-in-depth, not the authorization mechanism.
 
+The final Cloudflare -> Render proxy chain must still be tested before launch to verify the client
+IP/proxy assumptions used by rate limiting.
+
 ## Error handling and logs
 
-Every request receives `X-Request-Id`. Production 500 responses are generic and return the request
-ID so a report can be matched to server logs.
+Every request receives `X-Request-Id`.
+
+Production 500 responses are generic and return the request ID so a report can be matched to server
+logs.
 
 Server 500 logging intentionally excludes:
 
@@ -87,32 +140,85 @@ Server 500 logging intentionally excludes:
 - query strings
 
 Do not switch error logging to `req.originalUrl`, because reset/verification/invitation URLs may
-carry secret tokens in the query string. Never log environment variables or connection strings.
+carry secret tokens in the query string.
+
+Never log environment variables or connection strings.
 
 ## Cloudflare R2
 
-R2 access credentials remain server-only. The Admin browser gets short-lived presigned PUT URLs for
-exact object keys created by the API. The browser converts source images to predefined WebP
-variants before upload, and the API verifies uploaded objects before committing media metadata.
+R2 access credentials remain server-only.
 
-Production bucket CORS must allow only the real Bastly frontend origin, not `*`. See
-`R2_MEDIA_SETUP.md`.
+The Admin browser gets short-lived presigned PUT URLs for exact object keys created by the API.
+
+The browser converts source images to predefined WebP variants before upload, and the API verifies
+uploaded objects before committing media metadata.
+
+Production bucket CORS must allow only the final Bastly frontend origin, not `*`.
+
+See:
+
+```text
+R2_MEDIA_SETUP.md
+```
+
+## PWA and caching boundary
+
+The service worker does not intercept `/api` requests.
+
+Authenticated API responses must never be placed into browser/Worker application caches.
+
+The service worker only registers on the canonical production origin configured by `VITE_SITE_URL`.
+
+`sw.js` itself is served with:
+
+```text
+Cache-Control: no-cache, no-store, must-revalidate
+Service-Worker-Allowed: /
+```
+
+Private SPA shells and offline fallback content are explicitly noindex where appropriate.
+
+## Production secret boundary
+
+Bastly treats production configuration as two separate classes:
+
+- server-only secrets: MongoDB, Gmail App Password, JWT signing secret, and R2 access credentials
+- intentionally public build values: Bastly WhatsApp number, display phone number, Instagram URL,
+  and canonical site URL
+
+Known secret names are rejected if they are accidentally introduced as `VITE_` variables.
+
+Render generates the JWT signing secret from the Blueprint when that deployment path is used.
+
+Production startup runs the same server environment contract used by:
+
+```text
+npm run check:prod
+```
+
+See `ENVIRONMENT.md` for the exact owner handoff list.
+
+Do not copy real values into this repository.
 
 ## Remaining before launch
 
-The next pre-production pass must finalize and verify the complete environment-variable contract,
-proxy/IP assumptions for the real Vercel -> Render path, production email/R2 checks, and final
-hosting configuration. After deployment, run role-by-role IDOR tests, concurrent one-time-token and
-reward tests, no-cache checks, security-header checks, and production log inspection before public
-launch.
+The local Cloudflare frontend architecture and routing behavior have been validated.
 
-## Production secret boundary (Step 7E)
+Still required before public launch:
 
-Bastly now treats production configuration as two separate classes:
+- owner decision on the final frontend origin/domain
+- production Render deployment
+- production MongoDB connectivity
+- final Cloudflare Worker runtime `BACKEND_URL`
+- final Render `CLIENT_URL`
+- production R2 CORS/public media origin
+- production Gmail verification
+- strict production frontend build against the live Render public API
+- live Browser -> Cloudflare -> Render session-cookie test
+- final proxy/IP and rate-limit verification
+- role-by-role IDOR tests
+- concurrent one-time-token/reward tests
+- live no-cache/security-header checks
+- production log inspection
 
-- server-only secrets: MongoDB, Gmail App Password, JWT signing secret, and R2 access credentials
-- intentionally public build values: Bastly WhatsApp number, display phone number, Instagram URL, and canonical site URL
-
-Known secret names are rejected if they are accidentally introduced as `VITE_` variables. Render generates the JWT signing secret from the Blueprint, and production startup runs the same server environment contract used by `npm run check:prod`.
-
-See `ENVIRONMENT.md` for the exact owner handoff list. Do not copy real values into this repository.
+Do not call Bastly launched until the production acceptance checklist in `DEPLOYMENT.md` passes.

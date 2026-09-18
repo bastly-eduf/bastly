@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "bastly-frontend",
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-09-17",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "bastlyeduf.com",
+      "custom_domain": true
+    }
+  ],
+  "vars": {
+    "BACKEND_URL": "https://bastly-api.onrender.com"
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api",
+      "/api/*",
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+      "/verify-email",
+      "/check-email",
+      "/invite/*",
+      "/student",
+      "/student/*",
+      "/parent",
+      "/parent/*",
+      "/doctor",
+      "/doctor/*",
+      "/admin",
+      "/admin/*"
+    ],
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

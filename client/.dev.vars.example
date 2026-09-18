@@ -1,0 +1,4 @@
+# Cloudflare Worker runtime variables for local development.
+# Copy this file to .dev.vars. Never commit .dev.vars.
+# Set BACKEND_URL to the Render API origin after the backend is deployed.
+BACKEND_URL=

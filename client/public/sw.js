@@ -2,7 +2,7 @@ const CACHE_VERSION = 'bastly-offline-v2';
 const OFFLINE_CACHE = `${CACHE_VERSION}:static`;
 
 const PRECACHE = [
-  '/offline.html',
+  '/offline',
   '/brand/bastly-logo.webp',
   '/brand/icon-192.png',
   '/brand/icon-512.png',
@@ -61,7 +61,7 @@ self.addEventListener('fetch', (event) => {
   // CDN HTTP caching are enough for those resources and avoid stale app bundles.
   event.respondWith(
     fetch(request, { cache: 'no-store' }).catch(async () => {
-      const offline = await caches.match('/offline.html', {
+      const offline = await caches.match('/offline', {
         ignoreSearch: true,
       });
 

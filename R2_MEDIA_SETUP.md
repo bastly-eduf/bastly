@@ -75,11 +75,25 @@ Do not create any `VITE_` versions of the access key or secret key.
 They must remain server-only.
 
 The public base URL can temporarily be an R2 `r2.dev` URL while testing.
-For production use a custom domain connected directly to the R2 bucket, for example:
+Do not use `r2.dev` as Bastly's production media origin; Cloudflare treats it as a
+non-production, rate-limited development endpoint.
 
-```text
-https://media.your-bastly-domain.com
-```
+The production media origin depends on the owner's final domain decision:
+
+- If the owner uses a custom domain, connect a media subdomain directly to the R2 bucket,
+  for example:
+
+  ```text
+  https://media.your-bastly-domain.com
+  ```
+
+- If the owner does not use a custom domain, do not fall back to `r2.dev` for production.
+  At the final deployment stage, expose public R2 objects through a Cloudflare Worker with
+  an R2 binding on the selected stable Cloudflare production origin, then use that HTTPS
+  origin as `CLOUDFLARE_R2_PUBLIC_BASE_URL`.
+
+Until that decision is made, keep the production public media origin unresolved rather than
+inventing a deployment URL.
 
 ## R2 API credentials
 

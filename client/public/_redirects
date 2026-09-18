@@ -1,0 +1,4 @@
+# These routes were removed from the public site.
+# Keep the current React behavior as a real HTTP redirect.
+/about / 301
+/contact / 301
